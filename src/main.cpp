@@ -1,37 +1,53 @@
+#include <string>
 #include "Bridges.h"
 #include "DataSource.h"
 #include "GraphAdjList.h"
 #include <iostream>
-#include <string>
-#include <unordered_map>
-#include <fstream>
-#include "data_src/OSMData.h"
-#include "data_src/OSMVertex.h"
-#include "data_src/OSMEdge.h"
 
 using namespace std;
 using namespace bridges;
 
-int main(int argc, char **argv) {
-	//test
-	// create Bridges object
-	Bridges bridges ("kyleighdavis", "753555741873");
+int main() {
+    try {
+        // ✅ note the 0 as first argument (assignment number)
+        Bridges bridges(0, "kyleighdavis", "753555741873");
 
-	DataSource ds(bridges);
-//	OSMData osm_data = ds.getOSMData("Charlotte, North Carolina");
-	OSMData osm_data = ds.getOSMData(41.03133177632377, -98.02593749997456,
-						42.008577297430456, -97.94531249997696);
+        bridges.setTitle("A Simple Adjacency list based Graph Example");
+        bridges.setDescription("Demonstrate how to create a graph with a few nodes and display it");
 
-	vector<OSMVertex> vertices = osm_data.getVertices();
-	vector<OSMEdge> edges = osm_data.getEdges();
+        GraphAdjList<string> graph;
 
-	double coords[2];
-	cout << "Number of Vertices [Charlotte]:" << vertices.size() << endl;
-	cout << "Number of Edges [Charlotte]:" << edges.size() << endl;
+        string kevin_bacon = "Kevin Bacon",
+               denzel_washington = "Denzel Washington",
+               morgan_freeman = "Morgan Freeman",
+               tom_cruise = "Tom Cruise",
+               angelina_jolie = "Angelina Jolie",
+               amy_adams = "Amy Adams",
+               brad_pitt = "Brad Pitt";
 
-	// get cartesian coordinate  location of first vertex
-	osm_data.getVertices()[0].getCartesianCoords(coords);
-	cout << "Location of first vertex [Cartesian Coord]: " <<  coords[0] << ","
-		<< coords[1] << endl;
-	return 0;
+        graph.addVertex(kevin_bacon);
+        graph.addVertex(denzel_washington);
+        graph.addVertex(morgan_freeman);
+        graph.addVertex(tom_cruise);
+        graph.addVertex(angelina_jolie);
+        graph.addVertex(amy_adams);
+        graph.addVertex(brad_pitt);
+
+        graph.addEdge(kevin_bacon, denzel_washington);
+        graph.addEdge(kevin_bacon, morgan_freeman);
+        graph.addEdge(kevin_bacon, angelina_jolie);
+        graph.addEdge(amy_adams, angelina_jolie);
+        graph.addEdge(tom_cruise, amy_adams);
+        graph.addEdge(angelina_jolie, brad_pitt);
+        graph.addEdge(brad_pitt, denzel_washington);
+
+        bridges.setDataStructure(&graph);
+
+        bridges.visualize();  // sends data to BRIDGES server
+
+        return 0;
+    }
+    catch (const exception& e) {
+        cerr << "Exception: " << e.what() << endl;
+    }
 }
