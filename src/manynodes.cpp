@@ -44,9 +44,9 @@ int main(int argc, char **argv) {
 	// population, and limit parametes
 
 	unordered_map<string, string> city_params {
-			{"min_pop","200000"},
+			{"min_pop","10000"},
 			{"max_pop","1000000"},
-			{"limit", "100000"}
+			{"limit", "30000"}
 		};
 
 	vector<City>  us_cities = ds.getUSCities(city_params);
