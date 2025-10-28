@@ -1,11 +1,12 @@
 #include <string>
-
+#include <iostream>
 using namespace std;
 
 #include "Bridges.h"
-#include "DataSource.h"
+#include "DataSource.h" 
 #include "data_src/City.h"
 #include "GraphAdjList.h"
+
 
 using namespace bridges;
 
@@ -24,24 +25,6 @@ int main(int argc, char **argv) {
 
 	cout << "Retrieving a set of US cities" << endl;
     bridges.setDescription("A simple example of retrieving US city data from Bridges DataSource");
-	// Parameters to the query are through an unordered map
-	// you may use any subset of parameters to filter the US city data
-	// results will be filtered to satisfy all specified parameters
-	// for example if you provide population ane elevation ranges, then only those
-	// cities matching those ranges will be retrieved
-
-	// Parameters include
-	// population range - specify  min and max population values
-	// elevation range - specify  min and max elevation values - note elevation can be
-	//   				negative (below sealevel!
-	// Lat/Long bounding box -- specified by minLatLong, maxLatLong pairs of values
-	// state  - state name -- cities within that state will be retrieved
-	// city   - city name  -- if it matches, it will be retrieved
-	// limit  - limit the output to a specified number of cities
-
-
-	// return upto 10 cities in the North Carolina, using the 
-	// population, and limit parametes
 
 	unordered_map<string, string> city_params {
 			{"min_pop","200000"},
@@ -60,18 +43,66 @@ int main(int argc, char **argv) {
 
     
     GraphAdjList<string> city_graph;
+	string input;
+	cout << "Enter us City";
+	getline(cin, input);
+
     string fayetteville_id = "Fayetteville, NC";
     string raleigh_id = "Raleigh, NC";
     string charlotte_id = "Charlotte, NC";
     city_graph.addVertex(fayetteville_id);
     city_graph.addVertex(raleigh_id);
     city_graph.addVertex(charlotte_id);
+	city_graph.addVertex(input);
     city_graph.addEdge(fayetteville_id, raleigh_id);
     city_graph.addEdge(raleigh_id, charlotte_id);
     city_graph.addEdge(charlotte_id, fayetteville_id);
+	city_graph.addEdge(input, fayetteville_id);
+	city_graph.getVertex(input)->getVisualizer()->setColor("red");
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
        
 
 	return 0;
 }
+
+// #include "Bridges.h"
+// #include "DataSource.h"
+// #include "GraphAdjList.h"
+
+// #include <iostream>
+// #include <string>
+// #include <unordered_map>
+// #include <fstream>
+// #include "data_src/OSMData.h"
+// #include "data_src/OSMVertex.h"
+// #include "data_src/OSMEdge.h"
+
+// using namespace std;
+// using namespace bridges;
+
+// int main(int argc, char **argv) {
+
+// 	// create Bridges object
+// 	Bridges bridges (2, "AriyaM", "211314957910");
+
+// 	DataSource ds(bridges);
+// //	OSMData osm_data = ds.getOSMData("Charlotte, North Carolina");
+// 	OSMData osm_data = ds.getOSMData(41.03133177632377, -98.02593749997456,
+// 						42.008577297430456, -97.94531249997696);
+
+// 	vector<OSMVertex> vertices = osm_data.getVertices();
+// 	vector<OSMEdge> edges = osm_data.getEdges();
+
+// 	double coords[2];
+// 	cout << "Number of Vertices [Charlotte]:" << vertices.size() << endl;
+// 	cout << "Number of Edges [Charlotte]:" << edges.size() << endl;
+// 	cout << "edge length of edge " << edges[0].getEdgeLength() << endl;
+// 	cout << "destination of edge " << 
+
+// 	// get cartesian coordinate  location of first vertex
+// 	osm_data.getVertices()[0].getCartesianCoords(coords);
+// 	cout << "Location of first vertex [Cartesian Coord]: " <<  coords[0] << ","
+// 		<< coords[1] << endl;
+// 	return 0;
+// }

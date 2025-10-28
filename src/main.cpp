@@ -9,9 +9,11 @@ using namespace bridges;
 
 int main() {
     try {
-        // 
-        Bridges bridges(0, "kyleighdavis", "753555741873");
 
+        // 
+
+
+        Bridges bridges(0, "kyleighdavis", "753555741873");
         bridges.setTitle("A Simple Adjacency list based Graph Example");
         bridges.setDescription("Demonstrate how to create a graph with a few nodes and display it");
 
