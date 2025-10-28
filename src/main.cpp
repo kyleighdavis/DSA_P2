@@ -9,7 +9,7 @@ using namespace bridges;
 
 int main() {
     try {
-        // ✅ note the 0 as first argument (assignment number)
+        // 
         Bridges bridges(0, "kyleighdavis", "753555741873");
 
         bridges.setTitle("A Simple Adjacency list based Graph Example");
