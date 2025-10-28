@@ -41,9 +41,9 @@ int main(int argc, char **argv) {
 
     
     GraphAdjList<string> city_graph;
-	string input;
+	string startVertex;
 	cout << "Enter us City";
-	getline(cin, input);
+	getline(cin, startVertex);
 
     string fayetteville_id = "Fayetteville, NC";
     string raleigh_id = "Raleigh, NC";
@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
     city_graph.addEdge(charlotte_id, fayetteville_id);
 	//city_graph.addEdge(input, fayetteville_id);
 
-	if(city_graph.getVertex(input) != nullptr){
-		city_graph.getVertex(input)->getVisualizer()->setColor("red");
-		cout << "Selected City: " << input << endl;
+	if(city_graph.getVertex(startVertex) != nullptr){
+		city_graph.getVertex(startVertex)->getVisualizer()->setColor("red");
+		cout << "Selected City: " << startVertex << endl;
 	}
 	else{
 		cout << "City not found" << endl;
