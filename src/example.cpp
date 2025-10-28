@@ -1,5 +1,5 @@
 #include <string>
-
+#include <iostream>
 using namespace std;
 
 #include "Bridges.h"
@@ -60,15 +60,21 @@ int main(int argc, char **argv) {
 
     
     GraphAdjList<string> city_graph;
+	string input;
+	cout << "Enter us City";
+	cin >> input;
+
     string fayetteville_id = "Fayetteville, NC";
     string raleigh_id = "Raleigh, NC";
     string charlotte_id = "Charlotte, NC";
     city_graph.addVertex(fayetteville_id);
     city_graph.addVertex(raleigh_id);
     city_graph.addVertex(charlotte_id);
+	city_graph.addVertex(input);
     city_graph.addEdge(fayetteville_id, raleigh_id);
     city_graph.addEdge(raleigh_id, charlotte_id);
     city_graph.addEdge(charlotte_id, fayetteville_id);
+	city_graph.addEdge(input, fayetteville_id);
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
        
