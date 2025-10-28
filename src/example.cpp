@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     GraphAdjList<string> city_graph;
 	string input;
 	cout << "Enter us City";
-	cin >> input;
+	getline(cin, input);
 
     string fayetteville_id = "Fayetteville, NC";
     string raleigh_id = "Raleigh, NC";
@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
     city_graph.addEdge(raleigh_id, charlotte_id);
     city_graph.addEdge(charlotte_id, fayetteville_id);
 	city_graph.addEdge(input, fayetteville_id);
+	city_graph.getVertex(input)->getVisualizer()->setColor("red");
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
        
