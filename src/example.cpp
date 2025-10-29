@@ -33,11 +33,12 @@ int main(int argc, char **argv) {
 
 	vector<City>  us_cities = ds.getUSCities(city_params);
 	cout << "US Cities (tested for limit of 25 cities, population over 200K, and lat/long Bounding Box: (34.025348,-85.352783), (36.800488,-75.300293):\n";
-	for (auto c : us_cities)
-		cout << "\n" << c.getCity() << "," << c.getState() << ":" <<
-			" Population: " <<  c.getPopulation()  <<
-			", Elevation: "  <<  c.getElevation()
-			<< ", Lat/Long: " << c.getLatitude() << "," << c.getLongitude();
+	for (int i = 0; i < us_cities.size(); i++){
+		cout << "\n" << us_cities[i].getCity() << "," << us_cities[i].getState() << ":" <<
+		" Population: " <<  us_cities[i].getPopulation()  <<
+		", Elevation: "  <<  us_cities[i].getElevation()
+		<< ", Lat/Long: " << us_cities[i].getLatitude() << "," << us_cities[i].getLongitude();
+	}
 
     
     GraphAdjList<string> city_graph;
@@ -50,20 +51,26 @@ int main(int argc, char **argv) {
 	getline(cin, endVertex);
 	cout << endl;
 
-    string fayetteville_id = "Fayetteville, NC";
-    string raleigh_id = "Raleigh, NC";
-    string charlotte_id = "Charlotte, NC";
-    city_graph.addVertex(fayetteville_id);
-    city_graph.addVertex(raleigh_id);
-    city_graph.addVertex(charlotte_id);
-	//city_graph.addVertex(input);
-    city_graph.addEdge(fayetteville_id, raleigh_id);
-    city_graph.addEdge(raleigh_id, charlotte_id);
-    city_graph.addEdge(charlotte_id, fayetteville_id);
-	//city_graph.addEdge(input, fayetteville_id);
+	for(int i = 0; i < us_cities.size(); i++){
+		City c = us_cities[i];
+		string city_id = c.getCity() + ", " + c.getState();
+		city_graph.addVertex(city_id);
+	}
+
+	for(int i = 0; i < us_cities.size(); i++){
+		for(int j = i + 1; j < us_cities.size(); j++){
+			string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
+			string city2 = us_cities[j].getCity() + ", " + us_cities[j].getState();
+			city_graph.addEdge(city1, city2);
+			city_graph.addEdge(city2, city1);
+		}
+	}
 
 
-	if(city_graph.getVertex(startVertex) == nullptr){
+	if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr){
+		cout << "Neither city found" << endl;
+	}
+	else if(city_graph.getVertex(startVertex) == nullptr){
 		cout << "First city not found" << endl;
 	}
 	else if(city_graph.getVertex(endVertex) == nullptr){
