@@ -2,13 +2,18 @@
 #include <iostream>
 #include <cmath>
 #include <map>
+#include <algorithm>
 using namespace std;
+#include <unordered_map>  
+#include <vector>         
+
 
 #include "Bridges.h"
 #include "DataSource.h" 
 #include "data_src/City.h"
 #include "GraphAdjList.h"
 #include "dijkstra.h"
+
 
 
 using namespace bridges;
@@ -42,156 +47,162 @@ int main(int argc, char **argv) {
 	cout << "Retrieving a set of US cities" << endl;
     bridges.setDescription("A simple example of retrieving US city data from Bridges DataSource");
 
+	string state;
+	cout << "Enter state abbreviation: ";
+	getline(cin, state);
+	cout << endl;
+
+	unordered_map<string, string> city_params {
+			{"min_pop","500"},
+			{"max_pop","1000000"},
+			{"state", state},
+			{"limit", "30"}
+		};
+
+	vector<City>  us_cities = ds.getUSCities(city_params);
+	cout << "US Cities (tested for limit of 25 cities, population over 200K, and lat/long Bounding Box: (34.025348,-85.352783), (36.800488,-75.300293):\n";
+	for (int i = 0; i < us_cities.size(); i++){
+		cout << "\n" << us_cities[i].getCity() << "," << us_cities[i].getState() << ":" <<
+		" Population: " <<  us_cities[i].getPopulation()  <<
+		", Elevation: "  <<  us_cities[i].getElevation()
+		<< ", Lat/Long: " << us_cities[i].getLatitude() << "," << us_cities[i].getLongitude();
+	}
+
+	bool found = false;
+	for(int i = 0; i < us_cities.size(); i++){
+		string city_state = us_cities[i].getState();
+		if(city_state == state){
+			found = true;
+		}
+	}
+
+	if(!found){
+		cout << "No cities found in " << state << endl;
+		return 0;
+	}
+	else{
+		cout << "Cities found in " << state << "!" << endl;
+	}
+    
+   GraphAdjList<string, double> city_graph;
 	
-    // --- Input first state and get its cities ---
-string state1;
-cout << "Enter first state abbreviation (e.g., NC, CA, NY): ";
-getline(cin, state1);
+   //format example to access edge_weights["Raleigh, NC, Charlotte, NC"];
 
-unordered_map<string, string> city_params1 {
-    {"min_pop", "0"},
-    {"max_pop", "20000000"},
-    {"state", state1},
-    {"limit", "600"}          //  small number for BRIDGES
-};
-
-vector<City> cities1 = ds.getUSCities(city_params1);
-if (cities1.empty()) {
-    cout << "No cities found in " << state1 << endl;
-    return 0;
-}
-
-cout << "Cities found in " << state1 << ":" << endl;
-for (const auto& c : cities1) {
-    cout << c.getCity() << ", " << c.getState() << endl;
-}
-
-// --- Input second state and get its cities ---
-string state2;
-cout << "\nEnter second state abbreviation (e.g., NC, CA, NY): ";
-getline(cin, state2);
-
-unordered_map<string, string> city_params2 {
-    {"min_pop", "0"},
-    {"max_pop", "20000000"},
-    {"state", state2},
-    {"limit", "600"}
-};
-
-vector<City> cities2 = ds.getUSCities(city_params2);
-if (cities2.empty()) {
-    cout << "No cities found in " << state2 << endl;
-    return 0;
-}
-
-cout << "Cities found in " << state2 << ":" << endl;
-for (const auto& c : cities2) {
-    cout << c.getCity() << ", " << c.getState() << endl;
-}
-
-// --- Ask user for one city from each state ---
-string city1_input, city2_input;
-string selectedCity1, selectedCity2;
-
-// Validate first city
-// Validate first city
-while (true) {
-    cout << "\nEnter the first city from " << state1 << ": ";
-    getline(cin, city1_input);
-
-    bool found = false;
-    for (const auto& c : cities1) {
-        if (c.getCity() == city1_input) {
-            selectedCity1 = c.getCity() + ", " + c.getState();
-            found = true;
-            break;
-        }
-    }
-    if (found) break;
-    cout << "City not found in " << state1 << ". Please try again.\n";
-}
-
-// Validate second city
-// Validate second city
-while (true) {
-    cout << "Enter the second city from " << state2 << ": ";
-    getline(cin, city2_input);
-
-    bool found = false;
-    for (const auto& c : cities2) {
-        if (c.getCity() == city2_input) {
-            selectedCity2 = c.getCity() + ", " + c.getState();
-            found = true;
-            break;
-        }
-    }
-    if (found) break;
-    cout << "City not found in " << state2 << ". Please try again.\n";
-}
-
-
-// --- Combine both states' cities into a single vector for the graph ---
-vector<City> all_cities = cities1;
-all_cities.insert(all_cities.end(), cities2.begin(), cities2.end());
-
-    GraphAdjList<string, double> city_graph;
-	//format example to access edge_weights["Raleigh, NC, Charlotte, NC"];
 	map<string, double> edge_weights;
+	string startVertex;
+	string endVertex;
+	cout << endl;
+	cout << "Enter First City: ";
+	getline(cin, startVertex);
+	cout << "Enter Second City: ";
+	getline(cin, endVertex);
+	cout << endl;
+
+	//Fix;
+	// I added 2 lines to make sure 
+	// it automatically add the state abbreviation (already entered above) ---
 	
-	for(int i = 0; i < all_cities.size(); i++){
-    City c = all_cities[i];
-    string city_id = c.getCity() + ", " + c.getState();
-    city_graph.addVertex(city_id);
-}
+	startVertex = startVertex + ", " + state;
+	endVertex = endVertex + ", " + state;
 
+	for(int i = 0; i < us_cities.size(); i++){
+		City c = us_cities[i];
+		string city_id = c.getCity() + ", " + c.getState();
+		city_graph.addVertex(city_id);
+	}
 
+	int k = 3;  // number of nearest neighbors
+for(int i = 0; i < us_cities.size(); i++){
+    vector<pair<double,int>> distances;  // distance, index
+    for(int j = 0; j < us_cities.size(); j++){
+        if(i == j) continue;
+        double distance = getDistance(us_cities[i].getLatitude(), us_cities[i].getLongitude(),
+                                      us_cities[j].getLatitude(), us_cities[j].getLongitude());
+        distances.push_back({distance, j});
+    }
+    sort(distances.begin(), distances.end());  // sort by distance
+    for(int n = 0; n < min(k, (int)distances.size()); n++){
+        int j = distances[n].second;
+        string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
+        string city2 = us_cities[j].getCity() + ", " + us_cities[j].getState();
 
-for(int i = 0; i < all_cities.size(); i++){
-    for(int j = i + 1; j < all_cities.size(); j++){
-        double distance = getDistance(all_cities[i].getLatitude(), all_cities[i].getLongitude(),
-                                      all_cities[j].getLatitude(), all_cities[j].getLongitude());
-        string city1 = all_cities[i].getCity() + ", " + all_cities[i].getState();
-        string city2 = all_cities[j].getCity() + ", " + all_cities[j].getState();
-        city_graph.addEdge(city1, city2, distance);
-        city_graph.addEdge(city2, city1, distance);
-
-         
-
-        edge_weights[city1 + "," + city2] = distance;
-        edge_weights[city2 + "," + city1] = distance;
-
-       
+        // Add only if edge not already added
+        if(edge_weights.find(city1 + "," + city2) == edge_weights.end()){
+            city_graph.addEdge(city1, city2, distances[n].first);
+            city_graph.addEdge(city2, city1, distances[n].first);
+            edge_weights[city1 + "," + city2] = distances[n].first;
+            edge_weights[city2 + "," + city1] = distances[n].first;
+        }
     }
 }
 
-// --- Add labels for all cities ---
-for (int i = 0; i < all_cities.size(); i++) {
-    string city_id = all_cities[i].getCity() + ", " + all_cities[i].getState();
-    city_graph.getVertex(city_id)->setLabel(city_id); // show city label
-}
 
 
+	if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr){
+		cout << "Neither city found" << endl;
+	}
+	else if(city_graph.getVertex(startVertex) == nullptr){
+		cout << "First city not found" << endl;
+	}
+	else if(city_graph.getVertex(endVertex) == nullptr){
+		cout << "Second city not found" << endl;
+	}
+	else{
+		city_graph.getVertex(startVertex)->getVisualizer()->setColor("red");
+		city_graph.getVertex(endVertex)->getVisualizer()->setColor("red");
+		cout << "Showing fastest path from " << startVertex << " to " << endVertex << endl;
+	}
 
-
-
-
-
-	if(city_graph.getVertex(selectedCity1) == nullptr && city_graph.getVertex(selectedCity2) == nullptr){
-    cout << "Neither city found" << endl;
-}
-else if(city_graph.getVertex(selectedCity1) == nullptr){
-    cout << "First city not found" << endl;
-}
-else if(city_graph.getVertex(selectedCity2) == nullptr){
-    cout << "Second city not found" << endl;
-}
-else{
-    city_graph.getVertex(selectedCity1)->getVisualizer()->setColor("red");
-    city_graph.getVertex(selectedCity2)->getVisualizer()->setColor("red");
-    cout << "Showing fastest path from " << selectedCity1 << " to " << selectedCity2 << endl;
-}
-
+    
 	
+    // Build adjacency list based on existing edges in city_graph
+vector<vector<pair<int,double>>> adj(us_cities.size());
+map<string,int> cityIndex;
+for(int i = 0; i < us_cities.size(); i++) {
+    string name = us_cities[i].getCity() + ", " + us_cities[i].getState();
+    cityIndex[name] = i;
+}
+
+// Only add edges that exist in city_graph
+for(auto &edgePair : edge_weights) {
+    string cities = edgePair.first; // "City1, City2"
+    double weight = edgePair.second;
+    
+    // Find the last comma + space to split the two full city names
+    size_t lastComma = cities.rfind(", "); 
+    string city1 = cities.substr(0, lastComma);
+    string city2 = cities.substr(lastComma + 2);
+
+    int u = cityIndex[city1];
+    int v = cityIndex[city2];
+
+    adj[u].push_back({v, weight});
+    adj[v].push_back({u, weight});
+}
+
+// Run Dijkstra
+vector<int> prev;
+int src = cityIndex[startVertex];
+int dest = cityIndex[endVertex];
+vector<double> dist = dijkstra(us_cities.size(), adj, src, prev);
+
+// Reconstruct shortest path and mark edges red
+vector<int> path = reconstructPath(src, dest, prev);
+if(!path.empty()) {
+    for(size_t i = 0; i + 1 < path.size(); i++) {
+        string uName = us_cities[path[i]].getCity() + ", " + us_cities[path[i]].getState();
+        string vName = us_cities[path[i+1]].getCity() + ", " + us_cities[path[i+1]].getState();
+        if(city_graph.getLinkVisualizer(uName, vName) != nullptr) {
+            city_graph.getLinkVisualizer(uName, vName)->setColor("red");
+            city_graph.getLinkVisualizer(vName, uName)->setColor("red");
+        }
+    }
+    cout << "Shortest path marked in red!\n";
+} else {
+    cout << "No path found between " << startVertex << " and " << endVertex << endl;
+}
+
+
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
        

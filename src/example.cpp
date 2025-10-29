@@ -90,6 +90,13 @@ int main(int argc, char **argv) {
 	getline(cin, endVertex);
 	cout << endl;
 
+	//Fix;
+	// I added 2 lines to make sure 
+	// it automatically add the state abbreviation (already entered above) ---
+	
+	startVertex = startVertex + ", " + state;
+	endVertex = endVertex + ", " + state;
+
 	for(int i = 0; i < us_cities.size(); i++){
 		City c = us_cities[i];
 		string city_id = c.getCity() + ", " + c.getState();
