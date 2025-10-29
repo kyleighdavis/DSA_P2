@@ -8,6 +8,7 @@ using namespace std;
 #include "DataSource.h" 
 #include "data_src/City.h"
 #include "GraphAdjList.h"
+#include "dijkstra.h"
 
 
 using namespace bridges;
@@ -51,7 +52,7 @@ unordered_map<string, string> city_params1 {
     {"min_pop", "0"},
     {"max_pop", "20000000"},
     {"state", state1},
-    {"limit", "600"}          // fetch small number for BRIDGES
+    {"limit", "600"}          //  small number for BRIDGES
 };
 
 vector<City> cities1 = ds.getUSCities(city_params1);
