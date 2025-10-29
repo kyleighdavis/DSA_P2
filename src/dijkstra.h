@@ -1,18 +1,7 @@
-#ifndef GRAPH_UTILS_H
-#define GRAPH_UTILS_H
-
-#include "GraphAdjList.h"
 #include <vector>
 #include <string>
+#include "GraphAdjList.h"
 
-namespace bridges {
-namespace utils {
-
-void setRandomNodeLocations(bridges::datastructure::GraphAdjList<std::string>& graph,
-                            const std::vector<std::string>& node_ids,
-                            int spread);
-
-} // namespace utils
-} // namespace bridges
-
-#endif
+std::vector<std::string> dijkstra(const GraphAdjList<std::string, double>& graph, 
+                                  const std::string& start, 
+                                  const std::string& end);

@@ -1,18 +1,10 @@
-#include "GraphUtils.h"
-#include "GraphAdjList.h"
-#include <cstdlib>
-#include <vector>
+#include "dijkstra.h"
+#include <queue>
+#include <unordered_map>
+#include <limits>
 
-using namespace bridges;
-using namespace std;
-
-void setRandomNodeLocations(bridges::datastructure::GraphAdjList<string>& graph,
-                            const vector<string>& node_ids,
-                            int spread) {
-    for (auto& id : node_ids) {
-        auto v = graph.getVertex(id);
-        double x = ((double) rand() / RAND_MAX) * spread - spread / 2;
-        double y = ((double) rand() / RAND_MAX) * spread - spread / 2;
-        v->getVisualizer()->setLocation(x, y);
-    }
+std::vector<std::string> dijkstra(const GraphAdjList<std::string, double>& graph, 
+                                  const std::string& start, 
+                                  const std::string& end) {
+    // implement Dijkstra using priority_queue
 }
