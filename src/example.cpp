@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 #include "Bridges.h"
@@ -9,6 +10,21 @@ using namespace std;
 
 
 using namespace bridges;
+
+double getDistance(double lat1, double lon1, double lat2, double lon2){
+	double rad = M_PI / 180.0;
+	double latitude_distance = (lat2 - lat1) * rad;
+	double longitude_distance = (lon2 - lon1) * rad;
+
+	lat1 = lat1 * rad;
+	lat2 = lat2 * rad;
+
+	double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
+	double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
+
+	double earthRad = 6371.0;
+	return earthRad * angular_distance;
+}
 
 int main(int argc, char **argv) {
 
@@ -41,7 +57,7 @@ int main(int argc, char **argv) {
 	}
 
     
-    GraphAdjList<string> city_graph;
+    GraphAdjList<string, double> city_graph;
 	string startVertex;
 	string endVertex;
 	cout << endl;
@@ -59,12 +75,53 @@ int main(int argc, char **argv) {
 
 	for(int i = 0; i < us_cities.size(); i++){
 		for(int j = i + 1; j < us_cities.size(); j++){
+			double distance = getDistance(us_cities[i].getLatitude(), us_cities[i].getLongitude(), us_cities[j].getLatitude(), us_cities[j].getLongitude());
+
 			string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
 			string city2 = us_cities[j].getCity() + ", " + us_cities[j].getState();
-			city_graph.addEdge(city1, city2);
-			city_graph.addEdge(city2, city1);
+			city_graph.addEdge(city1, city2, distance);
+			city_graph.addEdge(city2, city1, distance);
 		}
 	}
+
+// ---------- TEST GRAPH ----------
+
+	cout << "\n--- Testing Graph ---\n";
+
+	// 1️⃣ Print all cities added to the graph
+	cout << "\nCities in the graph:\n";
+	for (int i = 0; i < us_cities.size(); i++) {
+		cout << us_cities[i].getCity() << "," << us_cities[i].getState() << endl;
+	}
+
+	// 2️⃣ Print a few sample distances manually
+	cout << "\nSample distances between some cities:\n";
+
+	// Example 1: Raleigh -> Charlotte
+	double dist1 = getDistance(
+		35.7721, -78.6386,   // Raleigh
+		35.2271, -80.8431    // Charlotte
+	);
+	cout << "Raleigh,NC -> Charlotte,NC : " << dist1 << " km" << endl;
+
+	// Example 2: Raleigh -> Durham
+	double dist2 = getDistance(
+		35.7721, -78.6386,   // Raleigh
+		35.994, -78.8986     // Durham
+	);
+	cout << "Raleigh,NC -> Durham,NC : " << dist2 << " km" << endl;
+
+	// Example 3: Charlotte -> Greensboro
+	double dist3 = getDistance(
+		35.2271, -80.8431,   // Charlotte
+		36.0726, -79.792     // Greensboro
+	);
+	cout << "Charlotte,NC -> Greensboro,NC : " << dist3 << " km" << endl;
+
+	cout << "--- End of Graph Test ---\n\n";
+
+
+
 
 
 	if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr){
