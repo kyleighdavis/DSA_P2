@@ -41,10 +41,15 @@ int main(int argc, char **argv) {
 	cout << "Retrieving a set of US cities" << endl;
     bridges.setDescription("A simple example of retrieving US city data from Bridges DataSource");
 
+	string state;
+	cout << "Enter state abbreviation: ";
+	getline(cin, state);
+	cout << endl;
+
 	unordered_map<string, string> city_params {
 			{"min_pop","200000"},
 			{"max_pop","1000000"},
-			{"state", "NC"},
+			{"state", state},
 			{"limit", "25"}
 		};
 
@@ -57,6 +62,21 @@ int main(int argc, char **argv) {
 		<< ", Lat/Long: " << us_cities[i].getLatitude() << "," << us_cities[i].getLongitude();
 	}
 
+	bool found = false;
+	for(int i = 0; i < us_cities.size(); i++){
+		string city_state = us_cities[i].getState();
+		if(city_state == state){
+			found = true;
+		}
+	}
+
+	if(!found){
+		cout << "No cities found in " << state << endl;
+		return 0;
+	}
+	else{
+		cout << "Cities found in " << state << "!" << endl;
+	}
     
    GraphAdjList<string, double> city_graph;
 	//format example to access edge_weights["Raleigh, NC, Charlotte, NC"];
