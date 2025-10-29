@@ -10,8 +10,6 @@ using namespace std;
 
 using namespace bridges;
 
-// this program illustrates how to access the data of the US and World 
-//	city data
 int main(int argc, char **argv) {
 
 	// create bridges object
@@ -43,9 +41,9 @@ int main(int argc, char **argv) {
 
     
     GraphAdjList<string> city_graph;
-	string input;
+	string startVertex;
 	cout << "Enter us City";
-	getline(cin, input);
+	getline(cin, startVertex);
 
     string fayetteville_id = "Fayetteville, NC";
     string raleigh_id = "Raleigh, NC";
@@ -53,12 +51,20 @@ int main(int argc, char **argv) {
     city_graph.addVertex(fayetteville_id);
     city_graph.addVertex(raleigh_id);
     city_graph.addVertex(charlotte_id);
-	city_graph.addVertex(input);
+	//city_graph.addVertex(input);
     city_graph.addEdge(fayetteville_id, raleigh_id);
     city_graph.addEdge(raleigh_id, charlotte_id);
     city_graph.addEdge(charlotte_id, fayetteville_id);
-	city_graph.addEdge(input, fayetteville_id);
-	city_graph.getVertex(input)->getVisualizer()->setColor("red");
+	//city_graph.addEdge(input, fayetteville_id);
+
+	if(city_graph.getVertex(startVertex) != nullptr){
+		city_graph.getVertex(startVertex)->getVisualizer()->setColor("red");
+		cout << "Selected City: " << startVertex << endl;
+	}
+	else{
+		cout << "City not found" << endl;
+	}
+	
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
        
