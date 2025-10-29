@@ -8,13 +8,33 @@ using namespace std;
 #include "GraphAdjList.h"
 #include <cstdlib>
 #include <ctime>
+#include "GraphUtils.h"
+#include <algorithm>
+#include <cctype>
+
+
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+
 
 using namespace bridges;
+using namespace std;
+
+
+// Normalize function (convert to lowercase and remove spaces)
+string normalize(const string& s) {
+    string result;
+    for (char c : s)
+        if (!isspace(c)) result += tolower(c);
+    return result;
+}
 
 // this program illustrates how to access the data of the US and World 
 //	city data
 int main(int argc, char **argv) {
-
+	srand(time(NULL));
 	// create bridges object
 	Bridges bridges (1, "AriyaM", "211314957910");
 
@@ -47,9 +67,9 @@ int main(int argc, char **argv) {
 
 	unordered_map<string, string> city_params {
 			{"min_pop","0"},
-			{"max_pop","1000000"},
+			{"max_pop","200000"},
 			
-			{"limit", "100"}
+			{"limit", "666"}
 		};
 
 	vector<City>  us_cities = ds.getUSCities(city_params);
@@ -64,12 +84,49 @@ int main(int argc, char **argv) {
     GraphAdjList<string> city_graph;
 	vector<string> city_ids;
 
-	for (const auto& c : us_cities) {
-    string city_id = c.getCity() + ", " + c.getState();
-    city_graph.addVertex(city_id);
-    city_ids.push_back(city_id);
+	for (auto& c : us_cities) {
+    string id = c.getCity() + ", " + c.getState();
+    city_graph.addVertex(id);
+	city_ids.push_back(id);
+
+    // Optional: highlight big cities
+    // <-- Insert here
+	//setRandomNodeLocations(city_graph, city_ids, 2000);  // Spread nodes so they don't all stack in center
 }
-    srand(time(NULL));
+	// Ask user for two cities and highlight them if they exist
+string city1, city2;
+bool valid = false;
+while (!valid) {
+    cout << "\nEnter the first city: ";
+    getline(cin, city1);
+    cout << "Enter the second city: ";
+    getline(cin, city2);
+
+    string found1_id = "";
+    string found2_id = "";
+
+    // Search for the full vertex ID by city name
+    for (const auto& id : city_ids) {
+        if (id.find(city1) != string::npos) {
+            found1_id = id;
+        }
+        if (id.find(city2) != string::npos) {
+            found2_id = id;
+        }
+    }
+
+    if (!found1_id.empty() && !found2_id.empty()) {
+        city_graph.getVertex(found1_id)->getVisualizer()->setColor("red");
+        city_graph.getVertex(found2_id)->getVisualizer()->setColor("red");
+        valid = true;
+    } else {
+        cout << "One or both cities were not found in the dataset. Please try again.\n";
+    }
+}
+
+	// setRandomNodeLocations(city_graph, city_ids,200);  // 2000 is the spread range, you can adjust as needed
+
+    
 
 int neighbors = 3;  // number of neighbors per city
 
