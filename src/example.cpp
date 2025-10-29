@@ -42,8 +42,13 @@ int main(int argc, char **argv) {
     
     GraphAdjList<string> city_graph;
 	string startVertex;
-	cout << "Enter us City";
+	string endVertex;
+	cout << endl;
+	cout << "Enter First City: ";
 	getline(cin, startVertex);
+	cout << "Enter Second City: ";
+	getline(cin, endVertex);
+	cout << endl;
 
     string fayetteville_id = "Fayetteville, NC";
     string raleigh_id = "Raleigh, NC";
@@ -57,12 +62,17 @@ int main(int argc, char **argv) {
     city_graph.addEdge(charlotte_id, fayetteville_id);
 	//city_graph.addEdge(input, fayetteville_id);
 
-	if(city_graph.getVertex(startVertex) != nullptr){
-		city_graph.getVertex(startVertex)->getVisualizer()->setColor("red");
-		cout << "Selected City: " << startVertex << endl;
+
+	if(city_graph.getVertex(startVertex) == nullptr){
+		cout << "First city not found" << endl;
+	}
+	else if(city_graph.getVertex(endVertex) == nullptr){
+		cout << "Second city not found" << endl;
 	}
 	else{
-		cout << "City not found" << endl;
+		city_graph.getVertex(startVertex)->getVisualizer()->setColor("red");
+		city_graph.getVertex(endVertex)->getVisualizer()->setColor("red");
+		cout << "Showing fastest path from " << startVertex << " to " << endVertex << endl;
 	}
 	
     bridges.setDataStructure(&city_graph);
