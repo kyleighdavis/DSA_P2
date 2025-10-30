@@ -3,6 +3,7 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
+#include <queue>
 using namespace std;
 
 #include "Bridges.h"
@@ -21,13 +22,98 @@ double getDistance(double lat1, double lon1, double lat2, double lon2) {
     lat2 = lat2 * rad;
 
     // some math formula stuff
-    double half_chord = pow(sin(latitude_distance / 2), 2) +
-                        pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
+    double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
     double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
 
     double earthRad = 6371.0;
     return earthRad * angular_distance;
 }
+
+vector<string> dijkstra(GraphAdjList<string, double>& city_graph, map<string, double> edge_weights, string startVertex, string endVertex) {
+    map<string, double> weights;
+    map<string, string> previous;
+    vector<pair<double, string>> pq; 
+
+    auto vertices = city_graph.getVertices();
+    for(auto it = vertices->begin(); it != vertices->end(); it++) {
+        string city_name = it->first;
+        weights[city_name] = 9999999999; // "infinity"
+        previous[city_name] = "";
+    }
+
+    weights[startVertex] = 0.0;
+    pq.push_back({0.0, startVertex});
+
+    while(!pq.empty()) {
+        // find city with smallest distance
+        int min_index = 0;
+        for(int i = 1; i < pq.size(); i++) {
+            if(pq[i].first < pq[min_index].first){
+                min_index = i;
+			}
+        }
+
+        string current_city = pq[min_index].second;
+        pq.erase(pq.begin() + min_index);
+
+        if(current_city == endVertex){
+            break;
+		}
+
+        for(auto it = edge_weights.begin(); it != edge_weights.end(); it++) {
+            string connecting_cities = it->first; 
+            double weight = it->second;
+
+			//need to parse to get each city name
+			//remember edge_weights map stores [(city, state), (city, state)]
+			int second_comma;
+			int comma_count = 0;
+
+			for(int i = 0; i < connecting_cities.length(); i++){
+				if(connecting_cities[i] == ','){
+					comma_count++;
+					if(comma_count == 2){
+						second_comma = i;
+						break;
+					}
+				}
+			}
+
+			string city1 = connecting_cities.substr(0, second_comma);
+			string city2 = connecting_cities.substr(second_comma + 2);
+
+            string neighbor = "";
+            if(city1 == current_city){
+				neighbor = city2;
+			}
+            else if(city2 == current_city){
+				neighbor = city1;
+			}
+            else{
+				continue;
+			}
+
+            double total_distance = weights[current_city] + weight;
+            if(total_distance < weights[neighbor]) {
+                weights[neighbor] = total_distance;
+                previous[neighbor] = current_city;
+                pq.push_back({total_distance, neighbor});
+            }
+        }
+    }
+
+    //stores the "fastes path"
+    vector<string> path;
+    string current_city = endVertex;
+    while(current_city != "") {
+        path.push_back(current_city);
+        current_city = previous[current_city];
+    }
+
+    reverse(path.begin(), path.end());
+    return path;
+}
+
 
 int main(int argc, char **argv) {
 
@@ -66,17 +152,18 @@ int main(int argc, char **argv) {
 
     // check to make sure there are cities in that state
     bool found = false;
-    for (int i = 0; i < us_cities.size(); i++) {
+    for(int i = 0; i < us_cities.size(); i++) {
         string city_state = us_cities[i].getState();
         if (city_state == state) {
             found = true;
         }
     }
 
-    if (!found) {
+    if(!found) {
         cout << "No cities found in " << state << endl;
         return 0;
-    } else {
+    } 
+	else {
         cout << "Cities found in " << state << "!" << endl;
     }
 
@@ -91,9 +178,12 @@ int main(int argc, char **argv) {
     cout << "Enter Second City: ";
     getline(cin, endVertex);
     cout << endl;
+	
+	startVertex = startVertex + ", " + state;
+	endVertex = endVertex + ", " + state;
 
     // adds all the cities as a vertex in the graph
-    for (int i = 0; i < us_cities.size(); i++) {
+    for(int i = 0; i < us_cities.size(); i++) {
         City c = us_cities[i];
         string city_id = c.getCity() + ", " + c.getState();
         city_graph.addVertex(city_id);
@@ -106,19 +196,19 @@ int main(int argc, char **argv) {
     double maximum_longitude = -180.0;
 
     // used to get boundaries for the graph visualization
-    for (int i = 0; i < us_cities.size(); i++) {
+    for(int i = 0; i < us_cities.size(); i++) {
         double latitude = us_cities[i].getLatitude();
         double longitude = us_cities[i].getLongitude();
-        if (latitude < minimum_latitude) {
+        if(latitude < minimum_latitude) {
             minimum_latitude = latitude;
         }
-        if (latitude > maximum_latitude) {
+        if(latitude > maximum_latitude) {
             maximum_latitude = latitude;
         }
-        if (longitude < minimum_longitude) {
+        if(longitude < minimum_longitude) {
             minimum_longitude = longitude;
         }
-        if (longitude > maximum_longitude) {
+        if(longitude > maximum_longitude) {
             maximum_longitude = longitude;
         }
     }
@@ -129,39 +219,39 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < us_cities.size(); i++) {
         string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
-        auto *v = city_graph.getVertex(cityName);
+        auto* vertex = city_graph.getVertex(cityName); //idk what the type is plz help this worked
 
         double x = (us_cities[i].getLongitude() - minimum_longitude) * x_space;
         double y = (us_cities[i].getLatitude() - minimum_latitude) * y_space;
 
-        v->setLocation(x, y);
-        v->getVisualizer()->setSize(8);
-        v->getVisualizer()->setColor("grey");
+        vertex->setLocation(x, y);
+        vertex->getVisualizer()->setSize(8);
+        vertex->getVisualizer()->setColor("grey");
     }
 
     // creating edges (connections between cities = # of neighbors)
     int neighbors = 10;
-    for (int i = 0; i < us_cities.size(); i++) {
+    for(int i = 0; i < us_cities.size(); i++) {
         string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
-        auto *v1 = city_graph.getVertex(city1);
+        auto *vertex1 = city_graph.getVertex(city1);
 
         vector<pair<double, string>> distance_list;
 
         // adjusting the distance for 2d
-        for (int j = 0; j < us_cities.size(); j++) {
-            if (i == j) {
+        for(int j = 0; j < us_cities.size(); j++) {
+            if(i == j) {
                 continue;
             }
 
             string city2 = us_cities[j].getCity() + ", " + us_cities[j].getState();
-            auto *v2 = city_graph.getVertex(city2);
-            if (v2 == nullptr) {
+            auto* vertex2 = city_graph.getVertex(city2);
+            if(vertex2 == nullptr) {
                 continue;
             }
 
             // pythagorean lol
-            double x_distance = v1->getLocationX() - v2->getLocationX();
-            double y_distance = v1->getLocationY() - v2->getLocationY();
+            double x_distance = vertex1->getLocationX() - vertex2->getLocationX();
+            double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
             double c_distance = sqrt(x_distance * x_distance + y_distance * y_distance);
 
             distance_list.push_back({c_distance, city2});
@@ -170,31 +260,28 @@ int main(int argc, char **argv) {
         sort(distance_list.begin(), distance_list.end());
 
         int count = 0;
-        for (int k = 0; k < distance_list.size(); k++) {
-            if (count >= neighbors) {
+        for(int k = 0; k < distance_list.size(); k++) {
+            if(count >= neighbors) {
                 break;
             }
 
             string city2 = distance_list[k].second;
-            if (edge_weights.find(city1 + ", " + city2) != edge_weights.end()) {
+            if(edge_weights.find(city1 + ", " + city2) != edge_weights.end()) {
                 continue;
             }
 
             // get the index in the og list (us_cities)
-            int city2_index = -1;
-            for (int n = 0; n < us_cities.size(); n++) {
+            int city2_index;
+            for(int n = 0; n < us_cities.size(); n++) {
                 string nameCheck = us_cities[n].getCity() + ", " + us_cities[n].getState();
-                if (nameCheck == city2) {
+                if(nameCheck == city2) {
                     city2_index = n;
                     break;
                 }
             }
-            if (city2_index == -1) { // means it's not in list
-                continue;
-            }
+            
 
-            double dist = getDistance(us_cities[i].getLatitude(), us_cities[i].getLongitude(),
-                                      us_cities[city2_index].getLatitude(), us_cities[city2_index].getLongitude());
+            double dist = getDistance(us_cities[i].getLatitude(), us_cities[i].getLongitude(), us_cities[city2_index].getLatitude(), us_cities[city2_index].getLongitude());
 
             city_graph.addEdge(city1, city2, dist);
             city_graph.addEdge(city2, city1, dist);
@@ -206,17 +293,37 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr) {
+    if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr) {
         cout << "Neither city found" << endl;
-    } else if (city_graph.getVertex(startVertex) == nullptr) {
+    } 
+	else if(city_graph.getVertex(startVertex) == nullptr) {
         cout << "First city not found" << endl;
-    } else if (city_graph.getVertex(endVertex) == nullptr) {
+    } 
+	else if(city_graph.getVertex(endVertex) == nullptr) {
         cout << "Second city not found" << endl;
-    } else {
+    } 
+	else {
         city_graph.getVertex(startVertex)->getVisualizer()->setColor("red");
         city_graph.getVertex(endVertex)->getVisualizer()->setColor("red");
         cout << "Showing fastest path from " << startVertex << " to " << endVertex << endl;
     }
+
+	vector<string> path = dijkstra(city_graph, edge_weights, startVertex, endVertex);
+
+	//temporary tester, get rid of later
+	cout << "Shortest path: ";
+	for(string city : path){
+		cout << city << " -> ";
+	}
+	cout << "END" << endl;
+
+	// Color path nodes red
+	for (string city : path) {
+		auto* v = city_graph.getVertex(city);
+		if (v != nullptr)
+			v->getVisualizer()->setColor("red");
+	}
+
 
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
