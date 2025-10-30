@@ -59,6 +59,7 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
         if (u == endVertex) break;
         if (current_dist > dist[u]) continue;
 
+        // reference from geekforgeeks later...
         // Use adjacency list for neighbors (O(1) per neighbor)
         for (size_t i = 0; i < adj[u].size(); i++) {
             string neighbor = adj[u][i].first;
@@ -73,7 +74,11 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
         }
     }
 
+
     // Reconstruct path
+
+    // stores the fastest path
+
     vector<string> path;
     string current = endVertex;
     while (current != "") {
