@@ -279,7 +279,6 @@ int main(int argc, char **argv) {
                     break;
                 }
             }
-            
 
             double dist = getDistance(us_cities[i].getLatitude(), us_cities[i].getLongitude(), us_cities[city2_index].getLatitude(), us_cities[city2_index].getLongitude());
 
@@ -323,10 +322,10 @@ int main(int argc, char **argv) {
 		if (v != nullptr)
 			v->getVisualizer()->setColor("red");
 	}
-
-    for (int i = 0; i < path.size() - 1; i++) {
-        string city1 = path[i];
-        string city2 = path[i + 1];
+    
+    for (int pathInc = 0; pathInc < path.size() - 1; pathInc++) {
+        string city1 = path[pathInc];
+        string city2 = path[pathInc + 1];
         double redraw = edge_weights[city1 + ", " + city2];
         city_graph.addEdge(city1, city2, redraw);
         city_graph.addEdge(city2, city1, redraw);
