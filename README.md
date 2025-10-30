@@ -2,7 +2,7 @@ OK im gonna explain ...
 
 ## UF DSA Project 2: US City Graphs
 
-1. This 
+1. This is our Proejct 2 for Data Strcutre and Algorithms 
 
 
 ## Features
@@ -10,5 +10,6 @@ OK im gonna explain ...
 - Graph visualization using [Bridges C++ API](http://bridgesuncc.github.io/).
 - Calculates:
   - Shortest path distance (Dijkstra)
+  - Shortest path distance (A*)
   - Straight-line distance between cities
 - Displays runtime and memory usage of the algorithm.
