@@ -59,7 +59,7 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
         if (u == endVertex) break;
         if (current_dist > dist[u]) continue;
 
-        // reference from geekforgeeks later...
+        // reference from geekforseeks
         // Use adjacency list for neighbors (O(1) per neighbor)
         for (size_t i = 0; i < adj[u].size(); i++) {
             string neighbor = adj[u][i].first;
