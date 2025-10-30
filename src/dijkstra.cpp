@@ -1,93 +1,85 @@
 #include "dijkstra.h"
-#include <algorithm>
 #include <iostream>
-#include <cmath>
 #include <queue>
-using namespace std;
+#include <vector>
+#include <map>
+#include <unordered_map>
+#include <limits>
+#include <string>
 
-vector<string> dijkstra(bridges::GraphAdjList<string, double, double>& city_graph,
+
+
+using namespace std;
+using namespace bridges;
+
+vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
                         map<string, double>& edge_weights,
                         string startVertex,
-                        string endVertex)
- {
+                        string endVertex) {
 
-    map<string, double> weights;
-    map<string, string> previous;
-    vector<pair<double, string>> pq;
+    map<string,double> dist;
+    map<string,string> prev;
 
-    auto vertices = city_graph.getVertices();
-    for (auto it = vertices->begin(); it != vertices->end(); it++) {
-        string city_name = it->first;
-        weights[city_name] = 600; // "infinity"
-        previous[city_name] = "";
+    // get vertex names from Bridges
+    unordered_map<string, Element<double>*>* vertexMap = city_graph.getVertices();
+    unordered_map<string, Element<double>*>::iterator it;
+    for (it = vertexMap->begin(); it != vertexMap->end(); ++it) {
+        string cityName = it->first;
+        dist[cityName] = numeric_limits<double>::infinity();
+        prev[cityName] = "";
     }
 
-    weights[startVertex] = 0.0;
-    pq.push_back({0.0, startVertex});
+    dist[startVertex] = 0.0;
+
+    // Build adjacency list from edge_weights for efficiency
+    map<string, vector<pair<string, double>>> adj;
+    for (map<string, double>::iterator edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt) {
+        string key = edgeIt->first;
+        double weight = edgeIt->second;
+
+        size_t comma_pos1 = key.find(",");
+        size_t comma_pos2 = key.find(",", comma_pos1 + 2); // skip ", "
+        string city1 = key.substr(0, comma_pos2);
+        string city2 = key.substr(comma_pos2 + 2);
+
+        adj[city1].push_back({city2, weight});
+        adj[city2].push_back({city1, weight});
+    }
+
+    // Min-heap for Dijkstra
+    priority_queue<pair<double, string>, vector<pair<double, string>>, greater<pair<double, string>>> pq;
+    pq.push({0.0, startVertex});
 
     while (!pq.empty()) {
-        // find city with smallest distance
-        int min_index = 0;
-        for (int i = 1; i < pq.size(); i++) {
-            if (pq[i].first < pq[min_index].first) {
-                min_index = i;
-            }
-        }
+        pair<double, string> current = pq.top();
+        pq.pop();
+        double current_dist = current.first;
+        string u = current.second;
 
-        string current_city = pq[min_index].second;
-        pq.erase(pq.begin() + min_index);
+        if (u == endVertex) break;
+        if (current_dist > dist[u]) continue;
 
-        if (current_city == endVertex) {
-            break;
-        }
+        // Use adjacency list for neighbors (O(1) per neighbor)
+        for (size_t i = 0; i < adj[u].size(); i++) {
+            string neighbor = adj[u][i].first;
+            double weight = adj[u][i].second;
 
-        for (auto it = edge_weights.begin(); it != edge_weights.end(); it++) {
-            string connecting_cities = it->first;
-            double weight = it->second;
-
-            // parse the key to get each city name
-            int second_comma;
-            int comma_count = 0;
-
-            for (int i = 0; i < connecting_cities.length(); i++) {
-                if (connecting_cities[i] == ',') {
-                    comma_count++;
-                    if (comma_count == 2) {
-                        second_comma = i;
-                        break;
-                    }
-                }
-            }
-
-            string city1 = connecting_cities.substr(0, second_comma);
-            string city2 = connecting_cities.substr(second_comma + 2);
-
-            string neighbor = "";
-            if (city1 == current_city) {
-                neighbor = city2;
-            } else if (city2 == current_city) {
-                neighbor = city1;
-            } else {
-                continue;
-            }
-
-            double total_distance = weights[current_city] + weight;
-            if (total_distance < weights[neighbor]) {
-                weights[neighbor] = total_distance;
-                previous[neighbor] = current_city;
-                pq.push_back({total_distance, neighbor});
+            double alt = dist[u] + weight;
+            if (alt < dist[neighbor]) {
+                dist[neighbor] = alt;
+                prev[neighbor] = u;
+                pq.push({alt, neighbor});
             }
         }
     }
 
-    // stores the "fastest path"
+    // Reconstruct path
     vector<string> path;
-    string current_city = endVertex;
-    while (current_city != "") {
-        path.push_back(current_city);
-        current_city = previous[current_city];
+    string current = endVertex;
+    while (current != "") {
+        path.push_back(current);
+        current = prev[current];
     }
-
     reverse(path.begin(), path.end());
     return path;
 }

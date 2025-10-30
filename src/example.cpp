@@ -3,35 +3,14 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
-<<<<<<< HEAD
-#include <queue>
-=======
 #include <unordered_map>
 #include <vector>
->>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
 using namespace std;
 
 #include "Bridges.h"
 #include "DataSource.h"
 #include "data_src/City.h"
 #include "GraphAdjList.h"
-<<<<<<< HEAD
-
-using namespace bridges;
-
-double getDistance(double lat1, double lon1, double lat2, double lon2) {
-    double rad = M_PI / 180.0; // M_PI is value for pi
-    double latitude_distance = (lat2 - lat1) * rad;
-    double longitude_distance = (lon2 - lon1) * rad;
-
-    lat1 = lat1 * rad;
-    lat2 = lat2 * rad;
-
-    // some math formula stuff
-    double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
-    double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
-
-=======
 #include "dijkstra.h" 
 using namespace bridges;
 
@@ -48,99 +27,10 @@ double getDistance(double lat1, double lon1, double lat2, double lon2) {
     double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
     double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
 
->>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
     double earthRad = 6371.0;
     return earthRad * angular_distance;
 }
 
-<<<<<<< HEAD
-vector<string> dijkstra(GraphAdjList<string, double>& city_graph, map<string, double> edge_weights, string startVertex, string endVertex) {
-    map<string, double> weights;
-    map<string, string> previous;
-    vector<pair<double, string>> pq; 
-
-    auto vertices = city_graph.getVertices();
-    for(auto it = vertices->begin(); it != vertices->end(); it++) {
-        string city_name = it->first;
-        weights[city_name] = 9999999999; // "infinity"
-        previous[city_name] = "";
-    }
-
-    weights[startVertex] = 0.0;
-    pq.push_back({0.0, startVertex});
-
-    while(!pq.empty()) {
-        // find city with smallest distance
-        int min_index = 0;
-        for(int i = 1; i < pq.size(); i++) {
-            if(pq[i].first < pq[min_index].first){
-                min_index = i;
-			}
-        }
-
-        string current_city = pq[min_index].second;
-        pq.erase(pq.begin() + min_index);
-
-        if(current_city == endVertex){
-            break;
-		}
-
-        for(auto it = edge_weights.begin(); it != edge_weights.end(); it++) {
-            string connecting_cities = it->first; 
-            double weight = it->second;
-
-			//need to parse to get each city name
-			//remember edge_weights map stores [(city, state), (city, state)]
-			int second_comma;
-			int comma_count = 0;
-
-			for(int i = 0; i < connecting_cities.length(); i++){
-				if(connecting_cities[i] == ','){
-					comma_count++;
-					if(comma_count == 2){
-						second_comma = i;
-						break;
-					}
-				}
-			}
-
-			string city1 = connecting_cities.substr(0, second_comma);
-			string city2 = connecting_cities.substr(second_comma + 2);
-
-            string neighbor = "";
-            if(city1 == current_city){
-				neighbor = city2;
-			}
-            else if(city2 == current_city){
-				neighbor = city1;
-			}
-            else{
-				continue;
-			}
-
-            double total_distance = weights[current_city] + weight;
-            if(total_distance < weights[neighbor]) {
-                weights[neighbor] = total_distance;
-                previous[neighbor] = current_city;
-                pq.push_back({total_distance, neighbor});
-            }
-        }
-    }
-
-    //stores the "fastes path"
-    vector<string> path;
-    string current_city = endVertex;
-    while(current_city != "") {
-        path.push_back(current_city);
-        current_city = previous[current_city];
-    }
-
-    reverse(path.begin(), path.end());
-    return path;
-}
-=======
-
->>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
 
 
 int main(int argc, char **argv) {
@@ -165,11 +55,7 @@ int main(int argc, char **argv) {
         {"min_pop", "0"},
         {"max_pop", "10000000000"},
         {"state", state},
-<<<<<<< HEAD
-        {"limit", "1000"}};
-=======
         {"limit", "500"}};
->>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
 
     // given by bridges
     vector<City> us_cities = ds.getUSCities(city_params);
