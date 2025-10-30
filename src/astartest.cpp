@@ -22,17 +22,40 @@ double findHeuristic(pair<float, float> tocord, pair<float, float> fromcord){
     double lonDistance = (tocord.second - fromcord.second);
     return sqrt((latDistance * latDistance) + (lonDistance * lonDistance));
 }
+ // honestly for our purposes i think they should be the same but idk you tlel me later
+double findDistance(pair<float, float> tocord, pair<float, float> fromcord){
+    double latDistance = (tocord.first - fromcord.first);
+    double lonDistance = (tocord.second - fromcord.second);
+    return sqrt((latDistance * latDistance) + (lonDistance * lonDistance));
+}
 
-vector<double> aStar(int numofvert, const vector<vector<pair<int,double>>>& adj, int from, vector<int>& prev){
+vector<double> aStar(int numofvert, const vector<vector<pair<int,double>>>& adj, int from, int to, vector<int>& prev){
     prev.assign(numofvert, -1);
-    priority_queue<pair<double,int>, vector<pair<double,int>>, greater<pair<double,int>>> visited;
-    visited.push({0.0, from});
-    vector<double> dist(numofvert, numeric_limits<double>::infinity());
-    vector<double> known(numofvert, false)  ; //camefrom from wikipedia
+    priority_queue<pair<double,int>, vector<pair<double,int>>, greater<pair<double,int>>> toBeVisited; //openset from wikipedia
+    toBeVisited.push({0.0, from});
+    vector<double> dist(numofvert, numeric_limits<double>::infinity()); //gscore from wikipedia
+    vector<int> known(numofvert, -1)  ; //camefrom from wikipedia
     dist[from] = 0.0;
-    vector<double> estimated(numofvert, numeric_limits<double>::infinity());
-    estimated[from] = findHeuristic({0,0}, {0,0}); 
+    vector<double> estimatedShortest(numofvert, numeric_limits<double>::infinity()); //fscore from wikipedia
+    estimatedShortest[from] = findHeuristic(coords[from], coords[to]); //when importing into the actual thing
+    //i think we have to use coordinates to find heuristic of first node
 
-    while (!visited.empty()){
-        
+    while (!toBeVisited.empty()){
+        pair <double, int> lowestNode = toBeVisited.top(); //lowest node is current from wikipedia
+        int current = lowestNode.second;
+        if (current == to){
+            return dist;
+        }
+        toBeVisited.pop();
+        for (auto [neighbor, weight] : adj[current]){
+            double potentialPath = dist[current] + weight; //in the program were gonna use like actual longitude and latitude of the current node and the neighbor
+            if (potentialPath < dist[neighbor]){
+                known[neighbor] = current;
+                dist[neighbor] = potentialPath;
+                estimatedShortest[neighbor] = dist[neighbor] + findHeuristic(coords[neighbor], coords[to]);
+                toBeVisited.push({estimatedShortest[neighbor], neighbor});  
+            }
+        }
+    } 
+    return {};  
 }
