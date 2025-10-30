@@ -324,6 +324,19 @@ int main(int argc, char **argv) {
 			v->getVisualizer()->setColor("red");
 	}
 
+    for (int i = 0; i < path.size() - 1; i++) {
+        string city1 = path[i];
+        string city2 = path[i + 1];
+        double redraw = edge_weights[city1 + ", " + city2];
+        city_graph.addEdge(city1, city2, redraw);
+        city_graph.addEdge(city2, city1, redraw);
+        auto* redEdge = city_graph.getLinkVisualizer(city1, city2);
+        if (redEdge != nullptr) {
+            redEdge->setColor("red");
+            redEdge->setThickness(3);
+        }
+    }
+
 
     bridges.setDataStructure(&city_graph);
     bridges.visualize();
