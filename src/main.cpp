@@ -282,7 +282,7 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            //need to do this if we use getDistance it WILL CRASH
+            //need to do this if we use getDistance it WILL CRASH (getDistance is O(1) but math functions take a LONG time)
             double x_distance = vertex1->getLocationX() - vertex2->getLocationX();
             double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
             double c_distance = sqrt(x_distance * x_distance + y_distance * y_distance);
