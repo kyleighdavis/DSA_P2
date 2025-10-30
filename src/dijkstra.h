@@ -1,18 +1,22 @@
 #ifndef DIJKSTRA_H
 #define DIJKSTRA_H
 
+#include <string>
 #include <vector>
-#include <utility> // for std::pair
-#include <limits>  // for infinity
+#include <map>
+#include "Bridges.h"
+#include "GraphAdjList.h"
 
-// Computes shortest distances from src to all vertices
-// V: number of vertices
-// adj: adjacency list (vector of vector of {neighbor, weight})
-// src: starting vertex
-// prev: stores the previous vertex on the shortest path
-std::vector<double> dijkstra(int V, const std::vector<std::vector<std::pair<int,double>>>& adj, int src, std::vector<int>& prev);
+using namespace std;
+using namespace bridges;
 
-// Reconstructs the shortest path from src to dest using prev array
-std::vector<int> reconstructPath(int src, int dest, const std::vector<int>& prev);
+// Function declaration for Dijkstra shortest path
+// city_graph: the graph
+// edge_weights: map storing all edge distances between cities
+// startVertex, endVertex: the start and destination city names
+vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
+                        map<string, double>& edge_weights,
+                        string startVertex,
+                        string endVertex);
 
-#endif
+#endif // DIJKSTRA_H
