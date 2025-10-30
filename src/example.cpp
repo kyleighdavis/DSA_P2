@@ -3,13 +3,19 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
+<<<<<<< HEAD
 #include <queue>
+=======
+#include <unordered_map>
+#include <vector>
+>>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
 using namespace std;
 
 #include "Bridges.h"
 #include "DataSource.h"
 #include "data_src/City.h"
 #include "GraphAdjList.h"
+<<<<<<< HEAD
 
 using namespace bridges;
 
@@ -25,10 +31,29 @@ double getDistance(double lat1, double lon1, double lat2, double lon2) {
     double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
     double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
 
+=======
+#include "dijkstra.h" 
+using namespace bridges;
+
+
+double getDistance(double lat1, double lon1, double lat2, double lon2) {
+    double rad = M_PI / 180.0; // M_PI is value for pi
+    double latitude_distance = (lat2 - lat1) * rad;
+    double longitude_distance = (lon2 - lon1) * rad;
+
+    lat1 = lat1 * rad;
+    lat2 = lat2 * rad;
+
+    // some math formula stuff
+    double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
+    double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
+
+>>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
     double earthRad = 6371.0;
     return earthRad * angular_distance;
 }
 
+<<<<<<< HEAD
 vector<string> dijkstra(GraphAdjList<string, double>& city_graph, map<string, double> edge_weights, string startVertex, string endVertex) {
     map<string, double> weights;
     map<string, string> previous;
@@ -113,6 +138,9 @@ vector<string> dijkstra(GraphAdjList<string, double>& city_graph, map<string, do
     reverse(path.begin(), path.end());
     return path;
 }
+=======
+
+>>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
 
 
 int main(int argc, char **argv) {
@@ -137,7 +165,11 @@ int main(int argc, char **argv) {
         {"min_pop", "0"},
         {"max_pop", "10000000000"},
         {"state", state},
+<<<<<<< HEAD
         {"limit", "1000"}};
+=======
+        {"limit", "500"}};
+>>>>>>> eb816bd (I just make header + source file of dijkstra.. but i didnt change the actual code)
 
     // given by bridges
     vector<City> us_cities = ds.getUSCities(city_params);
