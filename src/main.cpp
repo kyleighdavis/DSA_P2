@@ -12,7 +12,7 @@
 
 #include <chrono>           // for timing/ our clock maybe...
 
-// the following 2 libraries should be working for Linux
+// The following 2 libraries should be working for Linux
 
 #include <sys/resource.h>   
 #include <sys/time.h>      
@@ -60,18 +60,39 @@ int main(int argc, char **argv) {
 
 	//user input part.....
 
+    //1. Ask for state abbreviation (case insensitive)
+
     string state;
-    cout << "Enter state abbreviation: ";
+    set<string> validStates = {
+    "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS",
+    "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY",
+    "NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
+    };
+
+    while (true) {
+    cout << "Enter state abbreviation (e.g., FL, TX. Lowercase is fine too!): ";
     getline(cin, state);
-    cout << endl;
+
+    // convert input to uppercase
+    
+    for (char &c : state) {
+        c = toupper(c);
+    }
+
+    if (validStates.find(state) != validStates.end()) {
+        break;  // valid state, exit loop
+    } else {
+        cout << "Invalid state abbreviation. Please try again.\n";
+    }
+}
 
 	// 2. Ask for min/max population and number of cities
-int minPop, maxPop, cityLimit;
+    int minPop, maxPop, cityLimit;
 
-while (true) {
+    while (true) {
     cout << "Enter minimum population (0 - 10000000): ";
     if (!(cin >> minPop) || minPop < 0 || minPop > 10000000) {
-        cout << "Invalid input. Please enter a number between 0 and 10,000,000.\n";
+        cout << "Invalid input. Please enter a number between 0 and 10 million.\n";
         cin.clear();
         
         continue;
@@ -79,7 +100,7 @@ while (true) {
     break;
 }
 
-while (true) {
+    while (true) {
     cout << "Enter maximum population (" << minPop << " - 10000000): ";
     if (!(cin >> maxPop) || maxPop < minPop || maxPop > 10000000) {
         cout << "Invalid input. Please enter a number between " << minPop << " and 10,000,000.\n";
@@ -101,10 +122,29 @@ while (true) {
     break;
 }
 
+    // creating edges (connections between cities = # of neighbors)
+    int neighbors;
+
+    // 3. Ask for the neigbor cities (let the user decide):
+
+    
+    while (true) {
+    cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";
+    if (cin >> neighbors && neighbors >= 0 && neighbors <= 10) {
+        
+
+        
+        break;
+    } else {
+        cout << "Invalid input. Please enter an integer between 0 and 10." << endl;
+        cin.clear();
+        
+    }
+}
 
 
 
-// 3. Create city_params from user input
+// 4. generate city_params from user input
 unordered_map<string, string> city_params{
     {"min_pop", to_string(minPop)},
     {"max_pop", to_string(maxPop)},
@@ -114,7 +154,7 @@ unordered_map<string, string> city_params{
 
 // 4. Now call getUSCities with this city_params
 
-// given by bridges
+// This is given by bridges
     vector<City> us_cities = ds.getUSCities(city_params);
     
 
@@ -150,27 +190,32 @@ unordered_map<string, string> city_params{
     GraphAdjList<string, double> city_graph;
 
     // format example to access edge_weights["Raleigh, NC, Charlotte, NC"];
+
     map<string, double> edge_weights;
     string startVertex;
     string endVertex;
     cout << endl;
     cout << "Now enter First City: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // clear leftover newline before getline()
     getline(cin, startVertex);
+
     cout << "Enter Second City: ";
     getline(cin, endVertex);
     cout << endl;
-	
-	startVertex = startVertex + ", " + state;
-	endVertex = endVertex + ", " + state;
 
+    startVertex = startVertex + ", " + state;
+    endVertex = endVertex + ", " + state;
+
+	
     // adds all the cities as a vertex in the graph
+
     for(int i = 0; i < us_cities.size(); i++) {
         City c = us_cities[i];
         string city_id = c.getCity() + ", " + c.getState();
         city_graph.addVertex(city_id);
     }
 
-    // math :(
+    // math from the get distance function :(
     double minimum_latitude = 90.0;
     double maximum_latitude = -90.0;
     double minimum_longitude = 180.0;
@@ -195,6 +240,7 @@ unordered_map<string, string> city_params{
     }
 
     // used to spread out graph visualization and help with chunking
+
     double x_space = 2000.0 / (maximum_longitude - minimum_longitude);
     double y_space = 2000.0 / (maximum_latitude - minimum_latitude);
 
@@ -210,8 +256,11 @@ unordered_map<string, string> city_params{
         vertex->getVisualizer()->setColor("grey");
     }
 
-    // creating edges (connections between cities = # of neighbors)
-    int neighbors = 10;
+    
+
+
+
+
     for(int i = 0; i < us_cities.size(); i++) {
         string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
         auto *vertex1 = city_graph.getVertex(city1);
@@ -219,6 +268,7 @@ unordered_map<string, string> city_params{
         vector<pair<double, string>> distance_list;
 
         // adjusting the distance for 2d
+
         for(int j = 0; j < us_cities.size(); j++) {
             if(i == j) {
                 continue;
@@ -289,25 +339,10 @@ unordered_map<string, string> city_params{
         cout << "Showing fastest path from " << startVertex << " to " << endVertex << endl;
     }
 
-	// this is where we use the "clock"
-
-	// to compare 2 algorithms we measure runtime and memory usage 
-
-	auto startTime = std::chrono::high_resolution_clock::now();
-
-	vector<string> path = dijkstra(city_graph, edge_weights, startVertex, endVertex);
-
-	auto endTime = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-	std::cout << "Dijkstra runtime: " << duration << " ms" << std::endl;
-
-	// Memory usage (Linux/macOS)
-	struct rusage usage;
-	getrusage(RUSAGE_SELF, &usage);
-	std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
+	
 
 
-
+    vector<string> path = dijkstra(city_graph, edge_weights, startVertex, endVertex);
 
 
 	//temporary tester, get rid of later
@@ -316,6 +351,7 @@ unordered_map<string, string> city_params{
 		cout << city << " -> ";
 	}
 	cout << "END" << endl;
+    cout << endl;
 
 	// Color path nodes red
 	for (string city : path) {
@@ -326,19 +362,21 @@ unordered_map<string, string> city_params{
 
 
 
-	// ok so now i want the user to know the Straight-line distance 
-	// and our shortest path distance using dijkstra algorithm
+	// Ok so now we want the user to know both the Straight-line distance 
+	// and our shortest path distance using dijkstra algorithm and A*
 
-	// Calculate total shortest path distance
+	// Calculate  shortest path distance using dijkstra algorithm
+
 	double shortestPathDistance = 0.0;
 	for(int i = 0; i < path.size() - 1; i++) {
     string city1 = path[i];
     string city2 = path[i+1];
     shortestPathDistance += edge_weights[city1 + ", " + city2];
 	}
-	cout << "Shortest-path distance lol: " << shortestPathDistance << " km" << endl;
+	cout << "Shortest-path distance using dijkstra algorithm: " 
+    << shortestPathDistance << " km" << endl;
 
-// Find indices of start and end city in us_cities
+    // Find indices of start and end city in us_cities
 int startIndex = -1, endIndex = -1;
 for(int i = 0; i < us_cities.size(); i++){
     string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
@@ -346,7 +384,7 @@ for(int i = 0; i < us_cities.size(); i++){
     if(cityName == endVertex) endIndex = i;
 }
 
-// Straight-line distance
+// Straight-line distance from getdistance function
 if(startIndex != -1 && endIndex != -1){
     double straightLine = getDistance(
         us_cities[startIndex].getLatitude(),
@@ -355,9 +393,31 @@ if(startIndex != -1 && endIndex != -1){
         us_cities[endIndex].getLongitude()
     );
     cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+    cout << endl;
 }
 
+    // This is where we use the "clock"
 
+	// We compare the 2 algorithms in terms of runtime and memory usage 
+
+    // Both metrics have C++ header file provided already.
+
+    // Runtime first.
+
+	auto startTime = std::chrono::high_resolution_clock::now();
+
+	
+
+	auto endTime = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	std::cout << "Dijkstra runtime: " << duration << " ms" << std::endl;
+
+	// Memory usage (Linux/macOS)
+
+	struct rusage usage;
+	getrusage(RUSAGE_SELF, &usage);
+	std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
+    cout<<endl;
 
 
     // Re-add and highlight shortest path edges so they appear on top
