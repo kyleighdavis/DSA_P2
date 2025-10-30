@@ -80,7 +80,7 @@ vector<string> dijkstra(bridges::GraphAdjList<string, double, double>& city_grap
         }
     }
 
-    // stores the "fastest path"
+    // stores the fastest path
     vector<string> path;
     string current_city = endVertex;
     while (current_city != "") {
