@@ -423,6 +423,10 @@ int main(int argc, char **argv) {
         city_graph.getVertex(endVertex)->getVisualizer()->setColor("purple");
         cout << "Showing fastest path from " << startVertex << " to " << endVertex << endl;
     }
+    
+    
+    
+    
     auto startTime = std::chrono::high_resolution_clock::now();
 
     vector<string> path = aStar(city_graph, edge_weights, startVertex, endVertex, us_cities);
@@ -499,6 +503,10 @@ int main(int argc, char **argv) {
 	getrusage(RUSAGE_SELF, &usage);
 	std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
     cout<<endl;
+
+    // end the dijkstra algorithm
+
+    
 
 
     // Re-add and highlight shortest path edges so they appear on top
