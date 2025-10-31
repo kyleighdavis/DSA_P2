@@ -24,8 +24,7 @@ Before running this project, make sure you have:
 - g++ compiler with C++14 support
   - Check version with `g++ --version`
 - Bridges C++ library installed
-  - Follow the tutorial [here](https://bridgesuncc.github.io/)
-
+  - Follow the tutorial [here](https://bridgesuncc.github.io/), dowload [Linux] [TGZ] under C++ client
 
   
 ## Step-By-Step Usage
