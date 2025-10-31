@@ -1,105 +1,522 @@
 #include <string>
+#include <iostream>
+#include <cmath>
+#include <map>
+#include <algorithm>
+#include <unordered_map>
+#include <vector>
+#include <utility>
+#include <cctype>  // for upper/lowercase conversion
+#include <limits>  // for numeric_limits
+#include <queue>
+#include <iostream>
 
-using namespace std;
+#include <chrono>           // for timing/ our clock maybe...
+
+// The following 2 libraries should be working for Linux
+
+#include <sys/resource.h>   
+#include <sys/time.h>      
 
 #include "Bridges.h"
 #include "DataSource.h"
 #include "data_src/City.h"
+#include "GraphAdjList.h"
 
 using namespace bridges;
+using namespace std;
 
-// this program illustrates how to access the data of the US and World 
-//	city data
+//reference: https://www.geeksforgeeks.org/dsa/program-distance-two-points-earth/
+double getDistance(double lat1, double lon1, double lat2, double lon2) {
+    double rad = M_PI / 180.0; // M_PI is value for pi
+    double latitude_distance = (lat2 - lat1) * rad;
+    double longitude_distance = (lon2 - lon1) * rad;
+
+    lat1 = lat1 * rad;
+    lat2 = lat2 * rad;
+
+    // some math formula stuff
+    double half_chord = pow(sin(latitude_distance / 2), 2) + pow(sin(longitude_distance / 2), 2) * cos(lat1) * cos(lat2);
+    double angular_distance = 2 * atan2(sqrt(half_chord), sqrt(1 - half_chord));
+
+    return 6371.0 * angular_distance;
+}
+
+double getHeuristic(double lat1, double lon1, double lat2, double lon2){
+	// Using Euclidean distance as heuristic
+	return getDistance(lat1, lon1, lat2, lon2);
+}
+
+vector<string> aStar(GraphAdjList<string, double>& cityGraph,
+	 map<string, double>& edgeWeights, 
+	 string startVertex, string endVertex, vector<City>& citiesForCords) {
+    priority_queue<pair<double,string>, vector<pair<double,string>>, 
+    greater<pair<double,string>>> toBeVisited; //openset from wikipedia
+    
+
+	map<string, double> dist; //gscore from wikipedia
+    
+
+	map<string, double> estimatedShortest; //fscore from wikipedia
+	map<string, string> prevPath;       
+    map<string, pair<double, double>> coords; // to store city coordinates
+
+    for (auto cityCoord : citiesForCords) {
+        string cityName = cityCoord.getCity() + ", " + cityCoord.getState();
+        coords[cityName] = {cityCoord.getLatitude(), cityCoord.getLongitude()};
+    }
+    pair<double, double> startCoord = coords[startVertex];
+    pair<double, double> endCoord = coords[endVertex];
+
+	for (auto vertexPair : cityGraph.getVertices()) {
+        string cityName = vertexPair.first; 
+        dist[cityName] = numeric_limits<double>::infinity();
+        estimatedShortest[cityName] = numeric_limits<double>::infinity();
+    }
+    dist[startVertex] = 0.0;
+    estimatedShortest[startVertex] = getHeuristic(startCoord.first, startCoord.second,
+        endCoord.first, endCoord.second);
+    toBeVisited.push({estimatedShortest[startVertex], startVertex}); //putting in shorest path and the id of the vertex
+
+    while (!toBeVisited.empty()){
+        pair <double, string> lowestNode = toBeVisited.top(); //lowest node is current from wikipedia
+        string current = lowestNode.second;
+        if (current == endVertex){ //if we reached the destination
+            break;
+        }
+        toBeVisited.pop();
+        
+        for (auto closestCity : cityGraph.outgoingEdgeSetOf(current)){// iterates through edges from a vertex
+			string neighbor = closestCity.to(); //gets the city name
+            double weight = closestCity.getWeight();
+            double potentialPath = dist[current] + weight; //in the program were gonna use like actual longitude and latitude of the current node and the neighbor
+            
+            if (potentialPath < dist[neighbor]){
+				prevPath[neighbor] = current;
+                dist[neighbor] = potentialPath;
+
+                estimatedShortest[neighbor] = dist[neighbor] + getHeuristic(coords[neighbor].first,
+                     coords[neighbor].second, coords[endVertex].first, coords[endVertex].second);
+                toBeVisited.push({estimatedShortest[neighbor], neighbor});
+            }
+        }
+    } 
+     vector<string> path;
+    string current = endVertex;
+    while (prevPath.find(current) != prevPath.end()) {
+        path.push_back(current);
+        current = prevPath[current];
+    }
+	path.push_back(startVertex);
+    reverse(path.begin(), path.end());
+    return path;
+}
+
+// vector<int> reconstructPath(map<string, string>& prevVertex, string current) {
+//     vector<int> pathBack;
+
+//     for (int at = to; at != -1; at = prev[at])
+//         path.push_back(at);
+//     reverse(path.begin(), path.end());
+//     if (!path.empty() && path[0] == from)
+//         return path;
+//     return {}; // no path found
+// }
+
+
+//anything bridges related was gathered from: https://bridgesuncc.github.io/doc/cxx-api/current/html/classbridges_1_1dataset_1_1_o_s_m_data.html
+//                                            https://bridgesuncc.github.io/tutorials/Data_OSM.html
+//                                            https://bridgesuncc.github.io/tutorials/Graph.html
 int main(int argc, char **argv) {
 
-	// create bridges object
-	Bridges bridges (5, "AriyaM", "211314957910");
+    // create bridges object
+    Bridges bridges(1, "AriyaM", "211314957910");
+
+    // set title
+    bridges.setTitle("Accessing US City data");
+
+    DataSource ds(&bridges);
+
+    cout << "Retrieving a set of US cities" << endl;
+    bridges.setDescription("A simple example of retrieving US city data from Bridges DataSource");
 
 
-	// set title
-	bridges.setTitle("Accessing US City data");
+	//user input part.....
 
-	DataSource ds (&bridges);
+    //1. Ask for state abbreviation (case insensitive)
 
-	cout << "Retrieving a set of US cities" << endl;
+    string state;
+    set<string> validStates = {
+    "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS",
+    "KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY",
+    "NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
+    };
 
-	// Parameters to the query are through an unordered map
-	// you may use any subset of parameters to filter the US city data
-	// results will be filtered to satisfy all specified parameters
-	// for example if you provide population ane elevation ranges, then only those
-	// cities matching those ranges will be retrieved
+    while (true) {
+        cout << "Enter state abbreviation (e.g., FL, TX. Lowercase is fine too!): ";
+        getline(cin, state);
 
-	// Parameters include
-	// population range - specify  min and max population values
-	// elevation range - specify  min and max elevation values - note elevation can be
-	//   				negative (below sealevel!
-	// Lat/Long bounding box -- specified by minLatLong, maxLatLong pairs of values
-	// state  - state name -- cities within that state will be retrieved
-	// city   - city name  -- if it matches, it will be retrieved
-	// limit  - limit the output to a specified number of cities
-
-
-	// return upto 10 cities in the North Carolina, using the 
-	// population, and limit parametes
-
-	unordered_map<string, string> city_params {
-			{"min_pop","200000"},
-			{"max_pop","1000000"},
-			{"state", "NC"},
-			{"limit", "100"}
-		};
-
-	vector<City>  us_cities = ds.getUSCities(city_params);
-	cout << "US Cities (tested for limit of 25 cities, population over 200K, and lat/long Bounding Box: (34.025348,-85.352783), (36.800488,-75.300293):\n";
-	for (auto c : us_cities)
-		cout << "\n" << c.getCity() << "," << c.getState() << ":" <<
-			" Population: " <<  c.getPopulation()  <<
-			", Elevation: "  <<  c.getElevation()
-			<< ", Lat/Long: " << c.getLatitude() << "," << c.getLongitude();
-
-
-       GraphAdjList<string> city_graph;
-	vector<string> city_ids;
-
-	for (auto& c : us_cities) {
-    string id = c.getCity() + ", " + c.getState();
-    city_graph.addVertex(id);
-	city_ids.push_back(id);
-
-    // Optional: highlight big cities
-    // <-- Insert here
-	//setRandomNodeLocations(city_graph, city_ids, 2000);  // Spread nodes so they don't all stack in center
-    }
-	// Ask user for two cities and highlight them if they exist
-    string city1, city2;
-    bool valid = false;
-    while (!valid) {
-        cout << "\nEnter the first city: ";
-        getline(cin, city1);
-        cout << "Enter the second city: ";
-        getline(cin, city2);
-
-        string found1_id = "";
-        string found2_id = "";
-
-    // Search for the full vertex ID by city name
-    for (const auto& id : city_ids) {
-        if (id.find(city1) != string::npos) {
-            found1_id = id;
+        // convert input to uppercase
+        
+        for (char& c : state) {
+            c = toupper(c);
         }
-        if (id.find(city2) != string::npos) {
-            found2_id = id;
+
+        if (validStates.find(state) != validStates.end()) {
+            break;  // valid state, exit loop
+        } else {
+            cout << "Invalid state abbreviation. Please try again.\n";
         }
     }
+    cout << "does this work??" << endl;
+	// 2. Ask for min/max population and number of cities
+    int min_pop;
+    int max_pop;
+    int city_limit;
 
-    if (!found1_id.empty() && !found2_id.empty()) {
-        city_graph.getVertex(found1_id)->getVisualizer()->setColor("red");
-        cout << city_graph.getVertex(found1_id) << endl;
-        city_graph.getVertex(found2_id)->getVisualizer()->setColor("red");
-        valid = true;
-    } else {
-        cout << "One or both cities were not found in the dataset. Please try again.\n";
+    while (true) {
+        string temp;
+        cout << "Enter minimum population (0 - 10000000): ";
+        getline(cin, temp);
+        min_pop = stoi(temp);
+        if (min_pop < 0 || min_pop > 10000000) {
+            cout << "Invalid input. Please enter a number between 0 and 10 million.\n";
+            
+            continue;
+        }
+        break;
+    }
+
+    while (true) {
+        string temp;
+        cout << "Enter maximum population (" << min_pop << " - 10000000): ";
+        getline(cin, temp);
+        max_pop = stoi(temp);
+        if (max_pop < min_pop || max_pop > 10000000) {
+            cout << "Invalid input. Please enter a number between " << min_pop << " and 10,000,000.\n";
+            
+            continue;
+        }
+        break;
+    }
+
+    while (true) {
+        string temp;
+        cout << "How many cities do you want to retrieve (1 - 1000)? ";
+        getline(cin, temp);
+        city_limit = stoi(temp);
+        if (city_limit < 1 || city_limit > 1000) {
+            cout << "Invalid input. Please enter a number between 1 and 500.\n";
+            
+            continue;
+        }
+        break;
+    }
+
+    // 3. Ask for the neigbor cities (let the user decide):
+
+    // creating edges (connections between cities = # of neighbors)
+    int neighbors;
+    while (true) {
+        string temp;
+        cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";
+        getline(cin, temp);
+        neighbors = stoi(temp);
+        if (neighbors >= 0 && neighbors <= 10) {
+            break;
+        } else {
+            cout << "Invalid input. Please enter an integer between 0 and 10." << endl;
+        }
+    }
+
+
+
+    // 4. generate city_params from user input
+    unordered_map<string, string> city_params{
+        {"min_pop", to_string(min_pop)},
+        {"max_pop", to_string(max_pop)},
+        {"state", state},
+        {"limit", to_string(city_limit)}
+    };
+
+    // 4. Now call getUSCities with this city_params
+
+    // This is given by bridges
+    vector<City> us_cities = ds.getUSCities(city_params);
+
+    for (int i = 0; i < us_cities.size(); i++) {
+        cout << "\n" << us_cities[i].getCity() << "," << us_cities[i].getState() << ":"
+             << " Population: " << us_cities[i].getPopulation()
+             << ", Elevation: " << us_cities[i].getElevation()
+             << ", Lat/Long: " << us_cities[i].getLatitude() << "," << us_cities[i].getLongitude();
+    }
+
+	cout << endl;
+	cout << endl;
+
+	cout << "These are all the cities that satisfy your input conditions in " << state << endl<< " (Population between " << min_pop << " and " << max_pop << ", showing up to " << city_limit << " cities):\n";
+
+    // check to make sure there are cities in that state
+    bool found = false;
+    for(int i = 0; i < us_cities.size(); i++) {
+        string city_state = us_cities[i].getState();
+        if (city_state == state) {
+            found = true;
+        }
+    }
+
+    if(!found) {
+        cout << "No cities found in " << state << endl;
+        return 0;
+    } 
+	
+    //create adjacency list
+    GraphAdjList<string, double> city_graph;
+
+    // format example to access edge_weights["Raleigh, NC, Charlotte, NC"];
+    map<string, double> edge_weights;
+    string startVertex;
+    string endVertex;
+    cout << endl;
+    cout << "Now enter First City: ";
+    getline(cin, startVertex);
+
+    cout << "Enter Second City: ";
+    getline(cin, endVertex);
+    cout << endl;
+
+    startVertex = startVertex + ", " + state;
+    endVertex = endVertex + ", " + state;
+
+	
+    // adds all the cities as a vertex in the graph
+
+    for(int i = 0; i < us_cities.size(); i++) {
+        City c = us_cities[i];
+        string city_id = c.getCity() + ", " + c.getState();
+        city_graph.addVertex(city_id);
+    }
+
+    // math from the get distance function :(
+    //reference: https://learn.microsoft.com/en-us/answers/questions/883272/find-max-min-latitude-and-longitude-from-coordinat
+    double minimum_latitude = 90.0;
+    double maximum_latitude = -90.0;
+    double minimum_longitude = 180.0;
+    double maximum_longitude = -180.0;
+
+    // used to get boundaries for the graph visualization
+    for(int i = 0; i < us_cities.size(); i++) {
+        double latitude = us_cities[i].getLatitude();
+        double longitude = us_cities[i].getLongitude();
+        if(latitude < minimum_latitude) {
+            minimum_latitude = latitude;
+        }
+        if(latitude > maximum_latitude) {
+            maximum_latitude = latitude;
+        }
+        if(longitude < minimum_longitude) {
+            minimum_longitude = longitude;
+        }
+        if(longitude > maximum_longitude) {
+            maximum_longitude = longitude;
+        }
+    }
+
+    // used to spread out graph visualization and help with chunking
+    //reference: https://stackoverflow.com/questions/4953150/convert-lat-longs-to-x-y-co-ordinates
+    double x_space = 2000.0 / (maximum_longitude - minimum_longitude);
+    double y_space = 2000.0 / (maximum_latitude - minimum_latitude);
+
+    for (int i = 0; i < us_cities.size(); i++) {
+        string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
+        auto* vertex = city_graph.getVertex(cityName); //idk what the type is plz help this worked
+
+        //reference: https://stackoverflow.com/questions/4953150/convert-lat-longs-to-x-y-co-ordinates.%E2%80%9D
+        double x = (us_cities[i].getLongitude() - minimum_longitude) * x_space;
+        double y = (us_cities[i].getLatitude() - minimum_latitude) * y_space;
+
+        vertex->setLocation(x, y);
+        vertex->getVisualizer()->setSize(8);
+        vertex->getVisualizer()->setColor("grey");
+    }
+
+
+    for(int i = 0; i < us_cities.size(); i++) {
+        string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
+        auto *vertex1 = city_graph.getVertex(city1);
+
+        vector<pair<double, string>> distance_list;
+
+        // adjusting the distance for 2d
+
+        for(int j = 0; j < us_cities.size(); j++) {
+            if(i == j) {
+                continue;
+            }
+
+            string city2 = us_cities[j].getCity() + ", " + us_cities[j].getState();
+            auto* vertex2 = city_graph.getVertex(city2);
+            if(vertex2 == nullptr) {
+                continue;
+            }
+
+            // pythagorean lol
+            //might crash if use getDistance()
+            //reference: https://www.geeksforgeeks.org/dsa/program-calculate-distance-two-points/
+            double x_distance = vertex1->getLocationX() - vertex2->getLocationX();
+            double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
+            double c_distance = sqrt(x_distance * x_distance + y_distance * y_distance);
+
+            distance_list.push_back({c_distance, city2});
+        }
+
+        sort(distance_list.begin(), distance_list.end());
+
+        int count = 0;
+        for(int k = 0; k < distance_list.size(); k++) {
+            if(count >= neighbors) {
+                break;
+            }
+
+            string city2 = distance_list[k].second;
+            if(edge_weights.find(city1 + ", " + city2) != edge_weights.end()) {
+                continue;
+            }
+
+            // get the index in the og list (us_cities)
+            int city2_index;
+            for(int n = 0; n < us_cities.size(); n++) {
+                string nameCheck = us_cities[n].getCity() + ", " + us_cities[n].getState();
+                if(nameCheck == city2) {
+                    city2_index = n;
+                    break;
+                }
+            }
+            
+
+            double dist = getDistance(us_cities[i].getLatitude(), us_cities[i].getLongitude(), us_cities[city2_index].getLatitude(), us_cities[city2_index].getLongitude());
+
+            city_graph.addEdge(city1, city2, dist);
+            city_graph.addEdge(city2, city1, dist);
+
+            edge_weights[city1 + ", " + city2] = dist;
+            edge_weights[city2 + ", " + city1] = dist;
+
+            count++; // limits number of neighbors
+        }
+    }
+
+
+    if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr) {
+        cout << "Neither city found" << endl;
+    } 
+	else if(city_graph.getVertex(startVertex) == nullptr) {
+        cout << "First city not found" << endl;
+    } 
+	else if(city_graph.getVertex(endVertex) == nullptr) {
+        cout << "Second city not found" << endl;
+    } 
+	else {
+        city_graph.getVertex(startVertex)->getVisualizer()->setColor("purple");
+        city_graph.getVertex(endVertex)->getVisualizer()->setColor("purple");
+        cout << "Showing fastest path from " << startVertex << " to " << endVertex << endl;
+    }
+    auto startTime = std::chrono::high_resolution_clock::now();
+
+    vector<string> path = aStar(city_graph, edge_weights, startVertex, endVertex, us_cities);
+
+	cout << "Shortest path: ";
+	for(string city : path){
+		cout << city << " -> ";
+	}
+	cout << "END" << endl;
+    cout << endl;
+
+	// Color path nodes purple
+	for (string city : path) {
+		auto* v = city_graph.getVertex(city);
+		if (v != nullptr)
+			v->getVisualizer()->setColor("purple");
+	}
+
+
+
+	// Ok so now we want the user to know both the Straight-line distance 
+	// and our shortest path distance using dijkstra algorithm and A*
+
+	// Calculate shortest path distance using A* algorithm
+
+	double shortest_path_distance = 0.0;
+	for(int i = 0; i < path.size() - 1; i++) {
+        string city1 = path[i];
+        string city2 = path[i+1];
+        shortest_path_distance += edge_weights[city1 + ", " + city2];
+	}
+	cout << "Shortest-path distance using A* algorithm: " << shortest_path_distance << " km" << endl;
+
+    // Find indices of start and end city in us_cities
+    int startIndex = -1;
+    int endIndex = -1;
+    for(int i = 0; i < us_cities.size(); i++){
+        string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
+        if(cityName == startVertex){
+            startIndex = i;
+        }
+
+        if(cityName == endVertex){
+            endIndex = i;
+        }
+    }
+
+    // Straight-line distance from getdistance function
+    if(startIndex != -1 && endIndex != -1){
+        double straightLine = getDistance(us_cities[startIndex].getLatitude(), us_cities[startIndex].getLongitude(), us_cities[endIndex].getLatitude(),us_cities[endIndex].getLongitude());
+        cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+        cout << endl;
+    }
+
+    // This is where we use the "clock"
+
+	// We compare the 2 algorithms in terms of runtime and memory usage 
+
+    // Both metrics have C++ header file provided already.
+
+    // Runtime first.
+
+	
+    std::cout << "HELLO TEST" << std::endl;
+	
+
+	auto endTime = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	std::cout << "A* runtime: " << duration << " ms" << std::endl;
+
+	// Memory usage (Linux/macOS)
+
+	struct rusage usage;
+	getrusage(RUSAGE_SELF, &usage);
+	std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
+    cout<<endl;
+
+
+    // Re-add and highlight shortest path edges so they appear on top
+	for (int i = 0; i < path.size() - 1; i++) {
+    string city1 = path[i];
+    string city2 = path[i + 1];
+    double dist = edge_weights[city1 + ", " + city2];
+
+    // re-add edge so it's drawn last (on top)
+    city_graph.addEdge(city1, city2, dist);
+    city_graph.addEdge(city2, city1, dist);
+
+    auto* purpleEdge = city_graph.getLinkVisualizer(city1, city2);
+    if (purpleEdge != nullptr) {
+        purpleEdge->setColor("purple");
+        purpleEdge->setThickness(5);  // thicker than default blue edges
     }
 }
-	return 0;
+    bridges.setDataStructure(&city_graph);
+    bridges.visualize();
+
+    return 0;
 }
