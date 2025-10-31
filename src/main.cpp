@@ -135,34 +135,33 @@ int main(int argc, char **argv) {
 
     // 3. Ask for the neigbor cities (let the user decide):
 
-    
+    // creating edges (connections between cities = # of neighbors)
+    int neighbors;
     while (true) {
-    cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";
-    if (cin >> neighbors && neighbors >= 0 && neighbors <= 10) {
-        
-
-        
-        break;
-    } else {
-        cout << "Invalid input. Please enter an integer between 0 and 10." << endl;
-        cin.clear();
-        
+        string temp;
+        cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";
+        getline(cin, temp);
+        neighbors = stoi(temp);
+        if (neighbors >= 0 && neighbors <= 10) {
+            break;
+        } else {
+            cout << "Invalid input. Please enter an integer between 0 and 10." << endl;
+        }
     }
-}
 
 
 
-// 4. generate city_params from user input
-unordered_map<string, string> city_params{
-    {"min_pop", to_string(min_pop)},
-    {"max_pop", to_string(max_pop)},
-    {"state", state},
-    {"limit", to_string(city_limit)}
-};
+    // 4. generate city_params from user input
+    unordered_map<string, string> city_params{
+        {"min_pop", to_string(min_pop)},
+        {"max_pop", to_string(max_pop)},
+        {"state", state},
+        {"limit", to_string(city_limit)}
+    };
 
-// 4. Now call getUSCities with this city_params
+    // 4. Now call getUSCities with this city_params
 
-// This is given by bridges
+    // This is given by bridges
     vector<City> us_cities = ds.getUSCities(city_params);
     
 
@@ -204,7 +203,6 @@ unordered_map<string, string> city_params{
     string endVertex;
     cout << endl;
     cout << "Now enter First City: ";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // clear leftover newline before getline()
     getline(cin, startVertex);
 
     cout << "Enter Second City: ";
@@ -264,10 +262,6 @@ unordered_map<string, string> city_params{
         vertex->getVisualizer()->setColor("grey");
     }
 
-    
-
-
-
 
     for(int i = 0; i < us_cities.size(); i++) {
         string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
@@ -288,7 +282,7 @@ unordered_map<string, string> city_params{
                 continue;
             }
 
-            // pythagorean lol
+            //need to do this if we use getDistance it WILL CRASH
             double x_distance = vertex1->getLocationX() - vertex2->getLocationX();
             double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
             double c_distance = sqrt(x_distance * x_distance + y_distance * y_distance);
@@ -378,10 +372,10 @@ unordered_map<string, string> city_params{
 
 	double shortestPathDistance = 0.0;
 	for(int i = 0; i < path.size() - 1; i++) {
-    string city1 = path[i];
-    string city2 = path[i+1];
-    shortestPathDistance += edge_weights[city1 + ", " + city2];
-	}
+        string city1 = path[i];
+        string city2 = path[i+1];
+        shortestPathDistance += edge_weights[city1 + ", " + city2];
+    }
 	cout << "Shortest-path distance using dijkstra algorithm: " 
     << shortestPathDistance << " km" << endl;
 
@@ -393,17 +387,17 @@ unordered_map<string, string> city_params{
         if(cityName == endVertex) endIndex = i;
     }
 
-// Straight-line distance from getdistance function
-if(startIndex != -1 && endIndex != -1){
-    double straightLine = getDistance(
-        us_cities[startIndex].getLatitude(),
-        us_cities[startIndex].getLongitude(),
-        us_cities[endIndex].getLatitude(),
-        us_cities[endIndex].getLongitude()
-    );
-    cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
-    cout << endl;
-}
+    // Straight-line distance from getdistance function
+    if(startIndex != -1 && endIndex != -1){
+        double straightLine = getDistance(
+            us_cities[startIndex].getLatitude(),
+            us_cities[startIndex].getLongitude(),
+            us_cities[endIndex].getLatitude(),
+            us_cities[endIndex].getLongitude()
+        );
+        cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+        cout << endl;
+    }
 
     // This is where we use the "clock"
 
@@ -431,20 +425,20 @@ if(startIndex != -1 && endIndex != -1){
 
     // Re-add and highlight shortest path edges so they appear on top
 	for (int i = 0; i < path.size() - 1; i++) {
-    string city1 = path[i];
-    string city2 = path[i + 1];
-    double dist = edge_weights[city1 + ", " + city2];
+        string city1 = path[i];
+        string city2 = path[i + 1];
+        double dist = edge_weights[city1 + ", " + city2];
 
-    // re-add edge so it's drawn last (on top)
-    city_graph.addEdge(city1, city2, dist);
-    city_graph.addEdge(city2, city1, dist);
+        // re-add edge so it's drawn last (on top)
+        city_graph.addEdge(city1, city2, dist);
+        city_graph.addEdge(city2, city1, dist);
 
-    auto* redEdge = city_graph.getLinkVisualizer(city1, city2);
-    if (redEdge != nullptr) {
-        redEdge->setColor("red");
-        redEdge->setThickness(5);  // thicker than default blue edges
+        auto* redEdge = city_graph.getLinkVisualizer(city1, city2);
+        if (redEdge != nullptr) {
+            redEdge->setColor("red");
+            redEdge->setThickness(5);  // thicker than default blue edges
+        }
     }
-}
 
 
 
