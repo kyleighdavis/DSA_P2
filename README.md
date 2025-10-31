@@ -19,9 +19,13 @@ The project visualizes US cities as a graph, allowing users to find the shortest
 Before running this project, make sure you have:
 
 - VS Code with WSL Extension
+  - Make sure it's installed on Windows
 - Ubuntu (via WSL)
 - g++ compiler with C++14 support
+  - Check version with `g++ --version`
 - Bridges C++ library installed
+  - Follow the tutorial [here](https://bridgesuncc.github.io/)
+
 
   
 ## Step-By-Step Usage
