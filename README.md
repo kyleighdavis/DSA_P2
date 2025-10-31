@@ -1,7 +1,45 @@
 ## UF DSA Project 2: US City Graphs
 
 This is Project 2 for Data Structures and Algorithms at UF.
-The project visualizes US cities as a graph, allowing users to find the shortest paths between cities using Dijkstra and A* algorithms.
+
+
+## 🧰 Project Description
+
+### 📄 Description of Data
+- The project uses **U.S. city data** (latitude, longitude, and population) provided by the **BRIDGES Data API**.
+- Each city is represented as a **node** in a graph.
+- Connections (edges) between cities represent possible routes, weighted by **geographical distance**.
+
+---
+
+### 🧠 Tools / Languages / APIs / Libraries Used
+- **Language:** C++ (C++14 standard)
+- **Development Environment:** Visual Studio Code (with WSL/Ubuntu)
+- **Compiler:** `g++`
+- **API:** [BRIDGES C++ API](http://bridgesuncc.github.io/) — for data visualization and U.S. city dataset access
+- **Libraries Used:**
+  - `<map>`, `<vector>`, `<queue>`, `<cmath>`, `<algorithm>` — for data management and computation
+  - **BRIDGES** — to visualize graphs interactively
+  - **STL Priority Queue** — to efficiently select the next city in Dijkstra’s algorithm
+
+---
+
+### ⚙️ Algorithms Implemented
+- **Dijkstra’s Algorithm** — finds the shortest path between cities in a weighted graph.
+- **A\* (A-Star) Algorithm** — optimized version of Dijkstra using heuristics (geographical distance).
+- Both algorithms are implemented and compared for **runtime efficiency** and **memory usage**.
+
+---
+
+### 🧩 Additional Data Structures / Algorithms Used
+- **Adjacency List:** stores city-to-city connections and their distances efficiently.
+- **Priority Queue (Min-Heap):** selects the city with the smallest tentative distance in `O(log V)` time.
+- **Map / Unordered Map:** tracks distances (`dist`) and predecessors (`prev`) for path reconstruction.
+- **Vector:** stores and returns the final shortest path sequence.
+- **Haversine Formula:** calculates real-world distance between two cities based on latitude and longitude.
+
+---
+
 
 
 ## 🚀Features
