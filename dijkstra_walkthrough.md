@@ -81,7 +81,30 @@ And the shortest distance from **A** to **E** = 12.
 
 ## 📦 Data Structures Used
 
+### 🔄 Traditional Dijkstra
+
+| Data Structure | Purpose | Complexity / Cons |
+|----------------|---------|------------------|
+| Vector / Array | Stores all nodes and distances | Finding the next minimum distance node is `O(V)` → slow for large graphs |
+| Adjacency Matrix | Stores all edge weights | Space `O(V²)` → wasteful for sparse graphs |
+| Array / Map for distance | Tracks shortest distances | Simple, but combined with linear search → overall `O(V²)` |
+
+**Cons:**  
+- Slow on large graphs  
+- High memory usage for sparse graphs  
+- Not suitable for real-time routing
+
 Dijkstra’s algorithm relies on several key data structures to stay **efficient** and **optimal**.
+
+
+### ⚡ Optimized Implementation (Our Project)
+
+| Data Structure | Purpose | Efficiency Impact |
+|----------------|---------|------------------|
+| Priority Queue (Min-Heap) | Quickly selects the closest node | `O(log V)` per selection → faster overall |
+| Adjacency List | Stores neighbors & weights | `O(V + E)` space → efficient for sparse graphs |
+| Map / Unordered Map | Tracks distances & previous nodes | Fast lookup and updates |
+| Vector | Stores and returns final path | Easy reversal & traversal |
 
 | Data Structure | Purpose | Efficiency Impact |
 |----------------|----------|-------------------|
