@@ -4,17 +4,17 @@ This is Project 2 for Data Structures and Algorithms at UF.
 The project visualizes US cities as a graph, allowing users to find the shortest paths between cities using Dijkstra and A* algorithms.
 
 
-## Features
+## 🚀Features
 - User selects a state, population range, number of cities, and neighbors per city.
 - Graph visualization using [Bridges C++ API](http://bridgesuncc.github.io/).
 - Calculates:
   - Shortest path distance (Dijkstra)
   - Shortest path distance (A*)
 
-- Displays runtime and memory usage of the algorithm.
+- Displays runtime and memory usage of both algorithms.
 
 
-## Prerequisites
+## 🧰 Prerequisites/Requirements
 
 Before running this project, make sure you have:
 
@@ -27,7 +27,7 @@ Before running this project, make sure you have:
   - Follow the tutorial [here](https://bridgesuncc.github.io/), dowload [Linux] [TGZ] under C++ client
 
   
-## Step-By-Step Usage
+## ⚙️Step-By-Step Usage
 
 1. In order to compile the project, you would need to setup and run BRIDGES Programs.
 2. Follow the bridges setup tutorials: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
@@ -41,7 +41,8 @@ Before running this project, make sure you have:
    - Remember you are editing the program in Ubuntu linux system, not your local Windows path.
 5. Below is a example screenshot of what the project should look like:
 6. Now compile it by using g++ command:
-7. Input prompts:
+
+## 💡Input prompts:
 - State abbreviation (case-insensitive, e.g., fl, Fl, FL)
 - Minimum and maximum population
 - Number of cities (1–500)
@@ -50,7 +51,8 @@ Before running this project, make sure you have:
   - User can type the city name (case-insensitive)
   - Must exist in the selected state
  
-## Example
+## 🧩 Example
 
-For a sample input and output of the program, see [Example Input/Output](example.md).
+For a sample input/output demonstration, see:  
+👉 [Example Input/Output](example.md)
 
