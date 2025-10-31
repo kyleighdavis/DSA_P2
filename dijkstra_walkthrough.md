@@ -145,8 +145,23 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 ### 🧱 Step 1: Initialize Distances and Previous Nodes
 
 ```cpp
+map<string,double> dist;
+map<string,string> prev;
+
+// Initialize all distances to infinity, except the start city
+unordered_map<string, Element<double>*>* vertexMap = city_graph.getVertices();
+for (auto it = vertexMap->begin(); it != vertexMap->end(); ++it) {
+    string cityName = it->first;
+    dist[cityName] = numeric_limits<double>::infinity();
+    prev[cityName] = "";
+}
+dist[startVertex] = 0.0;
 
 ```
+**Explanation:**
+- `dist[city]` → stores the **current shortest known distance** from the start city.
+- `prev[city]` → stores the **previous city on the path** to reconstruct the shortest path later.
+- All cities are initialized to `∞` except the start city, which is set to 0.
 
 ### 🧩 Step 2: Build an Adjacency List
 
@@ -165,8 +180,8 @@ for (auto edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt)
     adj[city1].push_back({city2, weight});
     adj[city2].push_back({city1, weight});
 }
-
 ```
+
 **Explanation:**
 - Converts the `edge_weights` map into an **adjacency list** for fast neighbor lookup.
 - Each city maps to a vector of pairs: `{neighbor_city, distance}`.
@@ -175,8 +190,10 @@ for (auto edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt)
 ### ⚡ Step 3: Initialize Priority Queue (Min-Heap)
 
 ```cpp
-
+priority_queue<pair<double, string>, vector<pair<double, string>>, greater<>> pq;
+pq.push({0.0, startVertex});
 ```
+
 **Explanation:**
 - Priority queue always gives the **closest city** next.
 - Each element contains `{current_distance, city_name}`.
@@ -186,14 +203,53 @@ for (auto edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt)
 ### 🧮 Step 4: Main Loop — Relaxing Edges
 
 ```cpp
+while (!pq.empty()) {
+    auto [current_dist, u] = pq.top();
+    pq.pop();
 
+    if (u == endVertex) break;
+    if (current_dist > dist[u]) continue;
+
+    for (auto neighbor : adj[u]) {
+        double alt = dist[u] + neighbor.second;
+        if (alt < dist[neighbor.first]) {
+            dist[neighbor.first] = alt;
+            prev[neighbor.first] = u;
+            pq.push({alt, neighbor.first});
+        }
+    }
+}
 ```
+
 **Explanation:**
+- Extract the **closest unvisited city** `u` from the priority queue.
+- Stop if `u` is the **destination city**.
+- Skip if a **shorter path to `u` is already known**.
+- Loop through all neighbors of `u`:
+  - Compute `alt = distance to u + edge weight to neighbor`.
+  - If `alt` is smaller than the neighbor’s current distance:
+    - Update `dist[neighbor]`.
+    - Set `prev[neighbor] = u`.
+    - Push neighbor into the priority queue.
 
 ### 🧵 Step 5: Reconstruct the Shortest Path
 
-
 ```cpp
+vector<string> path;
+string current = endVertex;
 
+while (current != "") {
+    path.push_back(current);
+    current = prev[current];
+}
+
+reverse(path.begin(), path.end());
+return path;
 ```
+
 **Explanation:**
+- Start at `endVertex` and follow the `prev` map backwards.
+- Collect all cities along the path in the `path` vector.
+- Reverse the vector to get the path from **start → end**.
+- Return the ordered list of cities as the **shortest path**.
+
