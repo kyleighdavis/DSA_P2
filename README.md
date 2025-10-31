@@ -18,3 +18,5 @@ OK im gonna explain ...
 
 1. In order to compile the project, you would need to setup and run BRIDGES Programs.
 2. The instructions for C++/Java/Python is here: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
+3. Since this project is programmed in C++ by VS Code, so you should follow the tutorial here:
+[BRIDGES(C++) With VS Code:Getting Started](https://bridgesuncc.github.io/bridges_setup_cxx_vscode.html)
