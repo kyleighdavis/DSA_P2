@@ -49,3 +49,8 @@ Before running this project, make sure you have:
 - Start and end city for shortest path calculation
   - User can type the city name (case-insensitive)
   - Must exist in the selected state
+ 
+## Example
+
+For a sample input and output of the program, see [Example Input/Output](example.md).
+
