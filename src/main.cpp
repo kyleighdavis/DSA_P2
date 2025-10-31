@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
         getline(cin, temp);
         city_limit = stoi(temp);
         if (city_limit < 1 || city_limit > 1000) {
-            cout << "Invalid input. Please enter a number between 1 and 500.\n";
+            cout << "Invalid input. Please enter a number between 1 and 1000.\n";
             
             continue;
         }
