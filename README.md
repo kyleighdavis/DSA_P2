@@ -18,23 +18,24 @@ The project visualizes US cities as a graph, allowing users to find the shortest
 
 Before running this project, make sure you have:
 
--VS Code with WSL Extension
--Ubuntu (via WSL)
--g++ compiler with C++14 support
--Bridges C++ library installed
+- VS Code with WSL Extension
+- Ubuntu (via WSL)
+- g++ compiler with C++14 support
+- Bridges C++ library installed
+
   
 ## Step-By-Step Usage
 
 1. In order to compile the project, you would need to setup and run BRIDGES Programs.
-2. The instructions for C++/Java/Python is here: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
-3. Since this project is programmed in C++ by VS Code, you should follow the tutorial here: [BRIDGES(C++) With VS Code:Getting Started](https://bridgesuncc.github.io/bridges_setup_cxx_vscode.html)
+2. Follow the bridges setup tutorials: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
+3. Since this project is programmed in C++ by VS Code, you should follow the instruction here: [BRIDGES(C++) With VS Code:Getting Started](https://bridgesuncc.github.io/bridges_setup_cxx_vscode.html)
 4. Several things the user should be careful while going through the tutorial:
    - Make sure you have the WSL Extension installed in VS Code.
    - In your task.json file, make sure to change the compiler from clang++ to g++.
    - Follow the tutorial steps carefully to avoid path or linking issues (remember
    - "-I../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/include" should be the relative path of include folder
    - "-L../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/lib" should be the relative path of library folder
-   - Remember you are editing the program in Ubuntu linux system on your Windows machine, not your local path.
+   - Remember you are editing the program in Ubuntu linux system, not your local Windows path.
 5. Below is a example screenshot of what the project should look like: 
 
 
