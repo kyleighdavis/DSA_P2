@@ -39,6 +39,13 @@ Before running this project, make sure you have:
    - "-I../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/include" should be the relative path of include folder
    - "-L../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/lib" should be the relative path of library folder
    - Remember you are editing the program in Ubuntu linux system, not your local Windows path.
-5. Below is a example screenshot of what the project should look like: 
-
-
+5. Below is a example screenshot of what the project should look like:
+6. Now compile it by using g++ command:
+7. Input prompts:
+- State abbreviation (case-insensitive, e.g., fl, Fl, FL)
+- Minimum and maximum population
+- Number of cities (1–500)
+- Maximum neighboring cities per city (0–10)
+- Start and end city for shortest path calculation
+  - User can type the city name (case-insensitive)
+  - Must exist in the selected state
