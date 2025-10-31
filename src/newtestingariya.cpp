@@ -43,7 +43,7 @@ double getDistance(double lat1, double lon1, double lat2, double lon2) {
 }
 
 double getHeuristic(double lat1, double lon1, double lat2, double lon2){
-	// Using Euclidean distance as heuristic
+	// Using Euclidean distance as heuristic bc the earth is 3d not 2d
 	return getDistance(lat1, lon1, lat2, lon2);
 }
 
@@ -55,20 +55,21 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
     
 
 	map<string, double> dist; //gscore from wikipedia
-    
-
 	map<string, double> estimatedShortest; //fscore from wikipedia
 	map<string, string> prevPath;       
     map<string, pair<double, double>> coords; // to store city coordinates
 
+    //get the city name and its coordinates from citiesForCords and store the coordinates in coords map
     for (auto cityCoord : citiesForCords) {
         string cityName = cityCoord.getCity() + ", " + cityCoord.getState();
         coords[cityName] = {cityCoord.getLatitude(), cityCoord.getLongitude()};
     }
+    //get the coords for start and end vertex
     pair<double, double> startCoord = coords[startVertex];
     pair<double, double> endCoord = coords[endVertex];
 
-	for (auto vertexPair : cityGraph.getVertices()) {
+    //fill them both up with infinity
+	for (auto& vertexPair : *cityGraph.getVertices()) {
         string cityName = vertexPair.first; 
         dist[cityName] = numeric_limits<double>::infinity();
         estimatedShortest[cityName] = numeric_limits<double>::infinity();
@@ -88,9 +89,9 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
         
         for (auto closestCity : cityGraph.outgoingEdgeSetOf(current)){// iterates through edges from a vertex
 			string neighbor = closestCity.to(); //gets the city name
-            double weight = closestCity.getWeight();
+            double weight = closestCity.getEdgeData();
             double potentialPath = dist[current] + weight; //in the program were gonna use like actual longitude and latitude of the current node and the neighbor
-            
+            //if it finds a shorter path make that one its previous and update dist and estimated shortest
             if (potentialPath < dist[neighbor]){
 				prevPath[neighbor] = current;
                 dist[neighbor] = potentialPath;
@@ -101,6 +102,7 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
             }
         }
     } 
+    //restructure same as dijsktra
      vector<string> path;
     string current = endVertex;
     while (prevPath.find(current) != prevPath.end()) {
