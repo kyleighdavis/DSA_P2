@@ -9,7 +9,7 @@ It’s commonly used in:
 - Network routing (finding efficient data paths)
 - Map applications (like Google Maps)
 
----
+
 
 ## 🌉 Basic Idea
 
@@ -78,9 +78,9 @@ Shortest distance from **A** to **E** = 12.
 
 ---
 
-# 💻 Your Project’s Implementation
+# 💻 Our Project’s Implementation
 
-Now let’s look at how your C++ program applies these steps.
+Now let’s look at how our C++ program applies these steps.
 
 ### 🧩 Function Header
 ```cpp
