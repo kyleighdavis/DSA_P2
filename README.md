@@ -11,5 +11,10 @@ OK im gonna explain ...
 - Calculates:
   - Shortest path distance (Dijkstra)
   - Shortest path distance (A*)
-  - Straight-line distance between cities
+
 - Displays runtime and memory usage of the algorithm.
+  
+## Usage
+
+1. In order to compile the project, you would need to setup and run BRIDGES Programs.
+2. The instructions for C++/Java/Python is here: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
