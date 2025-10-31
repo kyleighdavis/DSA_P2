@@ -244,7 +244,7 @@ return path;
 - Reverse the vector to get the path from **start → end**.
 - Return the ordered list of cities as the **shortest path**.
 
-### ⏱️ Step 6: Runtime and Efficiency**
+### ⏱️ Step 6: Runtime and Efficiency
 
 - **Min-heap priority queue**: `O((V + E) log V)`
 - **Adjacency list**: `O(V + E)` memory → efficient for sparse graphs
