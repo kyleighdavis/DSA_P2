@@ -56,3 +56,10 @@ Before running this project, make sure you have:
 For a sample input/output demonstration, see:  
 👉 [Example Input/Output](example.md)
 
+## 🔍 Algorithm Documentation
+
+For a detailed explanation of how the **Dijkstra’s Algorithm** works in this project, including its logic, data structures, and code breakdown, see:
+
+👉 [Dijkstra Algorithm Explanation](dijkstra_explained.md)
+
+
