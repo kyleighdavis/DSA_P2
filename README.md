@@ -1,5 +1,3 @@
-OK im gonna explain ...
-
 ## UF DSA Project 2: US City Graphs
 
 1. This is our Proejct 2 for Data Strcutre and Algorithms 
