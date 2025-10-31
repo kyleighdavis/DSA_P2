@@ -25,13 +25,15 @@ Dijkstra’s algorithm finds the **shortest route** from your start city to your
 
 ---
 
-### 📚 Reference
--- For a more detailed explanation of the algorithm, see the following articles:  
--- [Dijkstra’s Algorithm to find Shortest Paths from a Source to all](https://www.geeksforgeeks.org/dsa/dijkstras-shortest-path-algorithm-greedy-algo-7/)  
-[DSA Dijkstra's Algorithm](https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php)
-[Why use Dijkstra's Algorithm if Breadth First Search (BFS) can do the same thing faster?](https://stackoverflow.com/questions/3818079/why-use-dijkstras-algorithm-if-breadth-first-search-bfs-can-do-the-same-thing)
-[Dijkstra's Algorithm](https://www.programiz.com/dsa/dijkstra-algorithm)
-[Dijkstra Shortest Path](https://www.cs.usfca.edu/~galles/visualization/Dijkstra.html)
+### 📚 References
+For a more detailed explanation of Dijkstra’s Algorithm, see the following articles:
+
+- [GeeksforGeeks — *Dijkstra’s Algorithm to Find Shortest Paths from a Source to All*](https://www.geeksforgeeks.org/dsa/dijkstras-shortest-path-algorithm-greedy-algo-7/)
+- [W3Schools — *DSA Dijkstra's Algorithm*](https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php)
+- [Stack Overflow — *Why Use Dijkstra's Algorithm if Breadth First Search (BFS) Can Do the Same Thing Faster?*](https://stackoverflow.com/questions/3818079/why-use-dijkstras-algorithm-if-breadth-first-search-bfs-can-do-the-same-thing)
+- [Programiz — *Dijkstra's Algorithm Explained*](https://www.programiz.com/dsa/dijkstra-algorithm)
+- [USFCA Visualization — *Dijkstra Shortest Path Interactive Demo*](https://www.cs.usfca.edu/~galles/visualization/Dijkstra.html)
+
 
 ## 🧠 Step-by-Step Example
 
