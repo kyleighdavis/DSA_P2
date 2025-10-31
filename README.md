@@ -1,6 +1,7 @@
 ## UF DSA Project 2: US City Graphs
 
-1. This is our Proejct 2 for Data Strcutre and Algorithms 
+This is Project 2 for Data Structures and Algorithms at UF.
+The project visualizes US cities as a graph, allowing users to find the shortest paths between cities using Dijkstra and A* algorithms.
 
 
 ## Features
@@ -11,8 +12,18 @@
   - Shortest path distance (A*)
 
 - Displays runtime and memory usage of the algorithm.
+
+
+## Prerequisites
+
+Before running this project, make sure you have:
+
+-VS Code with WSL Extension
+-Ubuntu (via WSL)
+-g++ compiler with C++14 support
+-Bridges C++ library installed
   
-## Usage
+## Step-By-Step Usage
 
 1. In order to compile the project, you would need to setup and run BRIDGES Programs.
 2. The instructions for C++/Java/Python is here: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
@@ -24,4 +35,6 @@
    - "-I../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/include" should be the relative path of include folder
    - "-L../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/lib" should be the relative path of library folder
    - Remember you are editing the program in Ubuntu linux system on your Windows machine, not your local path.
+5. Below is a example screenshot of what the project should look like: 
+
 
