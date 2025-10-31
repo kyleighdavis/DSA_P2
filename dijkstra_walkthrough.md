@@ -144,10 +144,56 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 
 ### 🧱 Step 1: Initialize Distances and Previous Nodes
 
+```cpp
+
+```
+
 ### 🧩 Step 2: Build an Adjacency List
+
+```cpp
+map<string, vector<pair<string, double>>> adj;
+
+for (auto edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt) {
+    string key = edgeIt->first;
+    double weight = edgeIt->second;
+
+    size_t comma_pos1 = key.find(",");
+    size_t comma_pos2 = key.find(",", comma_pos1 + 2);
+    string city1 = key.substr(0, comma_pos2);
+    string city2 = key.substr(comma_pos2 + 2);
+
+    adj[city1].push_back({city2, weight});
+    adj[city2].push_back({city1, weight});
+}
+
+```
+**Explanation:**
+- Converts the `edge_weights` map into an **adjacency list** for fast neighbor lookup.
+- Each city maps to a vector of pairs: `{neighbor_city, distance}`.
+- This allows **O(1) access** to a city’s neighbors during the main loop.
 
 ### ⚡ Step 3: Initialize Priority Queue (Min-Heap)
 
+```cpp
+
+```
+**Explanation:**
+- Priority queue always gives the **closest city** next.
+- Each element contains `{current_distance, city_name}`.
+- Min-heap ensures **efficient selection** in `O(log V)` time per extraction.
+
+
 ### 🧮 Step 4: Main Loop — Relaxing Edges
 
+```cpp
+
+```
+**Explanation:**
+
 ### 🧵 Step 5: Reconstruct the Shortest Path
+
+
+```cpp
+
+```
+**Explanation:**
