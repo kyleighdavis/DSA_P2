@@ -99,12 +99,6 @@ Dijkstra’s algorithm relies on several key data structures to stay **efficient
 
 ### ⚡ Optimized Implementation (Our Project)
 
-| Data Structure | Purpose | Efficiency Impact |
-|----------------|---------|------------------|
-| Priority Queue (Min-Heap) | Quickly selects the closest node | `O(log V)` per selection → faster overall |
-| Adjacency List | Stores neighbors & weights | `O(V + E)` space → efficient for sparse graphs |
-| Map / Unordered Map | Tracks distances & previous nodes | Fast lookup and updates |
-| Vector | Stores and returns final path | Easy reversal & traversal |
 
 | Data Structure | Purpose | Efficiency Impact |
 |----------------|----------|-------------------|
@@ -121,6 +115,12 @@ Dijkstra’s algorithm relies on several key data structures to stay **efficient
 
 This combination gives an **overall time complexity of `O((V + E) log V)`**,  
 which is **optimal for sparse graphs** like city road maps.
+
+
+**Benefits:**  
+- Much faster than linear search (`O((V + E) log V)`)  
+- Memory-efficient for sparse graphs  
+- Optimized for real-time shortest path calculations  
 
 
 # 💻 Our Project’s Implementation
