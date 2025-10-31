@@ -70,54 +70,65 @@ int main(int argc, char **argv) {
     };
 
     while (true) {
-    cout << "Enter state abbreviation (e.g., FL, TX. Lowercase is fine too!): ";
-    getline(cin, state);
+        cout << "Enter state abbreviation (e.g., FL, TX. Lowercase is fine too!): ";
+        getline(cin, state);
 
-    // convert input to uppercase
-    transform(state.begin(), state.end(), state.begin(), [](unsigned char c){ return toupper(c); });
+        // convert input to uppercase
+        
+        for (char& c : state) {
+            c = toupper(c);
+        }
 
-    if (validStates.find(state) != validStates.end()) {
-        break;  // valid state, exit loop
-    } else {
-        cout << "Invalid state abbreviation. Please try again.\n";
+        if (validStates.find(state) != validStates.end()) {
+            break;  // valid state, exit loop
+        } else {
+            cout << "Invalid state abbreviation. Please try again.\n";
+        }
     }
-}
 
 	// 2. Ask for min/max population and number of cities
-    int minPop, maxPop, cityLimit;
+    int min_pop;
+    int max_pop;
+    int city_limit;
 
     while (true) {
-    cout << "Enter minimum population (0 - 10000000): ";
-    if (!(cin >> minPop) || minPop < 0 || minPop > 10000000) {
-        cout << "Invalid input. Please enter a number between 0 and 10 million.\n";
-        cin.clear();
-        
-        continue;
+        string temp;
+        cout << "Enter minimum population (0 - 10000000): ";
+        getline(cin, temp);
+        min_pop = stoi(temp);
+        if (min_pop < 0 || min_pop > 10000000) {
+            cout << "Invalid input. Please enter a number between 0 and 10 million.\n";
+            
+            continue;
+        }
+        break;
     }
-    break;
-}
 
     while (true) {
-    cout << "Enter maximum population (" << minPop << " - 10000000): ";
-    if (!(cin >> maxPop) || maxPop < minPop || maxPop > 10000000) {
-        cout << "Invalid input. Please enter a number between " << minPop << " and 10,000,000.\n";
-        cin.clear();
-        
-        continue;
+        string temp;
+        cout << "Enter maximum population (" << min_pop << " - 10000000): ";
+        getline(cin, temp);
+        max_pop = stoi(temp);
+        if (max_pop < min_pop || max_pop > 10000000) {
+            cout << "Invalid input. Please enter a number between " << min_pop << " and 10,000,000.\n";
+            
+            continue;
+        }
+        break;
     }
-    break;
-}
 
-while (true) {
-    cout << "How many cities do you want to retrieve (1 - 500)? ";
-    if (!(cin >> cityLimit) || cityLimit < 1 || cityLimit > 500) {
-        cout << "Invalid input. Please enter a number between 1 and 500.\n";
-        cin.clear();
-        
-        continue;
+    while (true) {
+        string temp;
+        cout << "How many cities do you want to retrieve (1 - 1000)? ";
+        getline(cin, temp);
+        city_limit = stoi(temp);
+        if (city_limit < 1 || city_limit > 1000) {
+            cout << "Invalid input. Please enter a number between 1 and 500.\n";
+            
+            continue;
+        }
+        break;
     }
-    break;
-}
 
     // creating edges (connections between cities = # of neighbors)
     int neighbors;
@@ -143,10 +154,10 @@ while (true) {
 
 // 4. generate city_params from user input
 unordered_map<string, string> city_params{
-    {"min_pop", to_string(minPop)},
-    {"max_pop", to_string(maxPop)},
+    {"min_pop", to_string(min_pop)},
+    {"max_pop", to_string(max_pop)},
     {"state", state},
-    {"limit", to_string(cityLimit)}
+    {"limit", to_string(city_limit)}
 };
 
 // 4. Now call getUSCities with this city_params
@@ -166,8 +177,8 @@ unordered_map<string, string> city_params{
 	cout << endl;
 
 	cout << "These are all the cities that satisfy your input conditions in " << state 
-	<< endl<< " (Population between " << minPop << " and " << maxPop 
-     << ", showing up to " << cityLimit << " cities):\n";
+	<< endl<< " (Population between " << min_pop << " and " << max_pop 
+     << ", showing up to " << city_limit << " cities):\n";
 
     // check to make sure there are cities in that state
     bool found = false;
@@ -338,8 +349,9 @@ unordered_map<string, string> city_params{
 
 	
 
-
+    auto startTime = std::chrono::high_resolution_clock::now();
     vector<string> path = dijkstra(city_graph, edge_weights, startVertex, endVertex);
+    auto endTime = std::chrono::high_resolution_clock::now();
 
 
 	//temporary tester, get rid of later
@@ -374,12 +386,12 @@ unordered_map<string, string> city_params{
     << shortestPathDistance << " km" << endl;
 
     // Find indices of start and end city in us_cities
-int startIndex = -1, endIndex = -1;
-for(int i = 0; i < us_cities.size(); i++){
-    string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
-    if(cityName == startVertex) startIndex = i;
-    if(cityName == endVertex) endIndex = i;
-}
+    int startIndex = -1, endIndex = -1;
+    for(int i = 0; i < us_cities.size(); i++){
+        string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
+        if(cityName == startVertex) startIndex = i;
+        if(cityName == endVertex) endIndex = i;
+    }
 
 // Straight-line distance from getdistance function
 if(startIndex != -1 && endIndex != -1){
@@ -401,11 +413,11 @@ if(startIndex != -1 && endIndex != -1){
 
     // Runtime first.
 
-	auto startTime = std::chrono::high_resolution_clock::now();
+	
 
 	
 
-	auto endTime = std::chrono::high_resolution_clock::now();
+	
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 	std::cout << "Dijkstra runtime: " << duration << " ms" << std::endl;
 
