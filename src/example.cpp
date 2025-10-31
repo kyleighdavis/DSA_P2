@@ -280,6 +280,7 @@ int main(int argc, char **argv) {
             }
 
             // pythagorean lol
+            //might crash if use getDistance()
             //reference: https://www.geeksforgeeks.org/dsa/program-calculate-distance-two-points/
             double x_distance = vertex1->getLocationX() - vertex2->getLocationX();
             double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
@@ -323,6 +324,7 @@ int main(int argc, char **argv) {
             count++; // limits number of neighbors
         }
     }
+
 
     if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr) {
         cout << "Neither city found" << endl;
