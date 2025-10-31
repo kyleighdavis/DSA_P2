@@ -46,7 +46,7 @@ Let’s say we have these cities and distances:
 | C | D | 8 |
 | D | E | 2 |
 
-You start at **A**, and you want to find the shortest path to **E**.
+We start at **A** and want to find the shortest path to **E**.
 
 1. Start with `A` → distance = 0  
    All others = ∞  
@@ -60,12 +60,11 @@ You start at **A**, and you want to find the shortest path to **E**.
 6. Finally, we get:  
 A → C → B → D → E
 
-
-Shortest distance from **A** to **E** = 12.
+And the shortest distance from **A** to **E** = 12.
 
 ---
 
-## ⚙️ Algorithm Steps (Generalized)
+## ⚙️ Algorithm Steps 
 
 | Step | Action |
 |------|---------|
@@ -77,6 +76,27 @@ Shortest distance from **A** to **E** = 12.
 | 6 | Reconstruct the path using the "previous" node map |
 
 ---
+
+## 📦 Data Structures Used
+
+Dijkstra’s algorithm relies on several key data structures to stay **efficient** and **optimal**.
+
+| Data Structure | Purpose | Efficiency Impact |
+|----------------|----------|-------------------|
+| **Priority Queue (Min-Heap)** | Selects the city with the smallest known distance next. | Ensures efficient selection in `O(log V)` time. |
+| **Adjacency List** | Stores each city’s neighbors and edge distances. | Reduces space complexity compared to adjacency matrix (`O(V + E)` vs `O(V²)`). |
+| **Map / Unordered Map** | Tracks shortest distance (`dist`) and previous city (`prev`). | Provides fast lookups and updates for distance tracking. |
+| **Vector** | Used to store and return the final path. | Allows easy reversal and ordered traversal. |
+
+**In this project**, we used:
+- `map<string, double>` → for `dist` (stores shortest known distances)  
+- `map<string, string>` → for `prev` (stores parent city for path reconstruction)  
+- `priority_queue<pair<double, string>, vector<pair<double, string>>, greater<>>` → for efficiently finding the next closest city  
+- `map<string, vector<pair<string, double>>>` → as our adjacency list to store connections  
+
+This combination gives an **overall time complexity of `O((V + E) log V)`**,  
+which is **optimal for sparse graphs** like city road maps.
+
 
 # 💻 Our Project’s Implementation
 
