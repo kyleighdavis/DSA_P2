@@ -74,10 +74,7 @@ int main(int argc, char **argv) {
     getline(cin, state);
 
     // convert input to uppercase
-    
-    for (char &c : state) {
-        c = toupper(c);
-    }
+    transform(state.begin(), state.end(), state.begin(), [](unsigned char c){ return toupper(c); });
 
     if (validStates.find(state) != validStates.end()) {
         break;  // valid state, exit loop
