@@ -142,3 +142,12 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 - `endVertex` → destination city.
 - Returns a `vector<string>` of cities along the shortest path.
 
+### 🧱 Step 1: Initialize Distances and Previous Nodes
+
+### 🧩 Step 2: Build an Adjacency List
+
+### ⚡ Step 3: Initialize Priority Queue (Min-Heap)
+
+### 🧮 Step 4: Main Loop — Relaxing Edges
+
+### 🧵 Step 5: Reconstruct the Shortest Path
