@@ -94,10 +94,10 @@ And the shortest distance from **A** to **E** = 12.
 - High memory usage for sparse graphs  
 - Not suitable for real-time routing
 
-Dijkstra’s algorithm relies on several key data structures to stay **efficient** and **optimal**.
+Our dijkstra’s algorithm relies on several advanced data structures to stay **efficient** and **optimal**.
 
 
-### ⚡ Optimized Implementation (Our Project)
+### ⚡ Optimized Implementation 
 
 
 | Data Structure | Purpose | Efficiency Impact |
@@ -133,3 +133,12 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
                      map<string, double>& edge_weights,
                      string startVertex,
                      string endVertex)
+
+**Explanation:**
+
+- `city_graph` → the graph of cities (nodes) and their connections.
+- `edge_weights` → map storing distances between cities, e.g., `"Miami, Orlando"`.
+- `startVertex` → starting city.
+- `endVertex` → destination city.
+- Returns a `vector<string>` of cities along the shortest path.
+
