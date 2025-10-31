@@ -77,7 +77,7 @@ Before running this project, make sure you have:
    - "-I../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/include" should be the relative path of include folder
    - "-L../bridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/lib" should be the relative path of library folder
    - Remember you are editing the program in Ubuntu linux system, not your local Windows path.
-5. Below is a example screenshot of what the project should look like: ![Project Visualization Screenshot](./images/project_screenshot.png)
+5. Below is a example screenshot of what the project should look like: ![Project Visualization Screenshot](./images/test.png)
 
 6. Now compile it by using g++ command:
 
