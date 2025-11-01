@@ -25,6 +25,7 @@
 using namespace bridges;
 using namespace std;
 
+//reference: https://www.geeksforgeeks.org/dsa/program-distance-two-points-earth/
 double getDistance(double lat1, double lon1, double lat2, double lon2) {
     double rad = M_PI / 180.0; // M_PI is value for pi
     double latitude_distance = (lat2 - lat1) * rad;
@@ -43,7 +44,9 @@ double getDistance(double lat1, double lon1, double lat2, double lon2) {
 
 
 
-
+//anything bridges related was gathered from: https://bridgesuncc.github.io/doc/cxx-api/current/html/classbridges_1_1dataset_1_1_o_s_m_data.html
+//                                            https://bridgesuncc.github.io/tutorials/Data_OSM.html
+//                                            https://bridgesuncc.github.io/tutorials/Graph.html
 int main(int argc, char **argv) {
 
     // create bridges object
@@ -220,7 +223,7 @@ int main(int argc, char **argv) {
         city_graph.addVertex(city_id);
     }
 
-    // math from the get distance function :(
+    //reference: https://learn.microsoft.com/en-us/answers/questions/883272/find-max-min-latitude-and-longitude-from-coordinat
     double minimum_latitude = 90.0;
     double maximum_latitude = -90.0;
     double minimum_longitude = 180.0;
@@ -245,7 +248,7 @@ int main(int argc, char **argv) {
     }
 
     // used to spread out graph visualization and help with chunking
-
+    //reference: https://stackoverflow.com/questions/4953150/convert-lat-longs-to-x-y-co-ordinates
     double x_space = 2000.0 / (maximum_longitude - minimum_longitude);
     double y_space = 2000.0 / (maximum_latitude - minimum_latitude);
 
@@ -253,6 +256,7 @@ int main(int argc, char **argv) {
         string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
         auto* vertex = city_graph.getVertex(cityName); //idk what the type is plz help this worked
 
+        //reference: https://stackoverflow.com/questions/4953150/convert-lat-longs-to-x-y-co-ordinates.%E2%80%9D
         double x = (us_cities[i].getLongitude() - minimum_longitude) * x_space;
         double y = (us_cities[i].getLatitude() - minimum_latitude) * y_space;
 
@@ -281,7 +285,8 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            //need to do this if we use getDistance it WILL CRASH
+            //need to do this if we use getDistance it WILL CRASH (getDistance is O(1) but math functions take a LONG time)
+            //reference: https://www.geeksforgeeks.org/dsa/program-calculate-distance-two-points/
             double x_distance = vertex1->getLocationX() - vertex2->getLocationX();
             double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
             double c_distance = sqrt(x_distance * x_distance + y_distance * y_distance);
