@@ -136,7 +136,6 @@ int main(int argc, char **argv) {
     // 3. Ask for the neigbor cities (let the user decide):
 
     // creating edges (connections between cities = # of neighbors)
-    int neighbors;
     while (true) {
         string temp;
         cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";

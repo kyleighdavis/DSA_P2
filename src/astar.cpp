@@ -48,18 +48,17 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
 
     openSet.push({fScore[startVertex], startVertex});
 
-    // --- Main Loop ---
     while (!openSet.empty()) {
         auto [currentF, current] = openSet.top();
         openSet.pop();
 
-        // Ignore outdated entries
+        //if the path is longer than the previous path skip
         if (currentF > fScore[current]) continue;
 
         if (current == endVertex)
             break;
 
-        // Use Bridges adjacency edges directly for neighbors
+        // 
         for (auto edge : cityGraph.outgoingEdgeSetOf(current)) {
             string neighbor = edge.to();
             double weight = edge.getEdgeData();
@@ -77,7 +76,7 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
         }
     }
 
-    // --- Reconstruct Path ---
+    //reconstruct path
     vector<string> path;
     string current = endVertex;
     while (prev.find(current) != prev.end()) {

@@ -11,7 +11,7 @@
 using namespace std;
 using namespace bridges;
 
-// --- Function Prototypes ---
+
 vector<string> aStar(
     GraphAdjList<string, double>& cityGraph,
     map<string, double>& edgeWeights,

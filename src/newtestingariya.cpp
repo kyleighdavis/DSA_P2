@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
             cout << "Invalid state abbreviation. Please try again.\n";
         }
     }
-    cout << "does this work??" << endl;
+   
 	// 2. Ask for min/max population and number of cities
     int min_pop;
     int max_pop;
@@ -431,6 +431,7 @@ int main(int argc, char **argv) {
 
     vector<string> path = aStar(city_graph, edge_weights, startVertex, endVertex, us_cities);
 
+    auto endTime = std::chrono::high_resolution_clock::now();
 	cout << "Shortest path: ";
 	for(string city : path){
 		cout << city << " -> ";
@@ -490,10 +491,10 @@ int main(int argc, char **argv) {
     // Runtime first.
 
 	
-    std::cout << "HELLO TEST" << std::endl;
+
 	
 
-	auto endTime = std::chrono::high_resolution_clock::now();
+	
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 	std::cout << "A* runtime: " << duration << " ms" << std::endl;
 
