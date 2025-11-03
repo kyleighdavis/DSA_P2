@@ -10,10 +10,11 @@
 using namespace std;
 using namespace bridges;
 
-// Function declaration for Dijkstra shortest path
-// city_graph: the graph
+// Function declaration for our Dijkstra shortest path
+// city_graph: the graph itself
 // edge_weights: map storing all edge distances between cities
 // startVertex, endVertex: the start and destination city names
+
 vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
                         map<string, double>& edge_weights,
                         string startVertex,
