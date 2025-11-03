@@ -50,10 +50,9 @@ double getHeuristic(double lat1, double lon1, double lat2, double lon2){
 vector<string> aStar(GraphAdjList<string, double>& cityGraph,
 	 map<string, double>& edgeWeights, 
 	 string startVertex, string endVertex, vector<City>& citiesForCords) {
-    priority_queue<pair<double,string>, vector<pair<double,string>>, 
-    greater<pair<double,string>>> toBeVisited; //openset from wikipedia
+    priority_queue<pair<double, string>, vector<pair<double, string>>,
+    greater<pair<double, string>>> toBeVisited; //openset from wikipedia
     
-
 	map<string, double> dist; //gscore from wikipedia
 	map<string, double> estimatedShortest; //fscore from wikipedia
 	map<string, string> prevPath;       
@@ -90,7 +89,7 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
         for (auto closestCity : cityGraph.outgoingEdgeSetOf(current)){// iterates through edges from a vertex
 			string neighbor = closestCity.to(); //gets the city name
             double weight = closestCity.getEdgeData();
-            double potentialPath = dist[current] + weight; //in the program were gonna use like actual longitude and latitude of the current node and the neighbor
+            double potentialPath = dist[current] + weight; 
             //if it finds a shorter path make that one its previous and update dist and estimated shortest
             if (potentialPath < dist[neighbor]){
 				prevPath[neighbor] = current;
