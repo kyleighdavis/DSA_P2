@@ -42,6 +42,76 @@ double getDistance(double lat1, double lon1, double lat2, double lon2) {
     return earthRad * angular_distance;
 }
 
+double getHeuristic(double lat1, double lon1, double lat2, double lon2){
+	// Using Euclidean distance as heuristic bc the earth is 3d not 2d
+	return getDistance(lat1, lon1, lat2, lon2);
+}
+
+vector<string> aStar(GraphAdjList<string, double>& cityGraph,
+	 map<string, double>& edgeWeights, 
+	 string startVertex, string endVertex, vector<City>& citiesForCords) {
+    priority_queue<pair<double, string>, vector<pair<double, string>>,
+    greater<pair<double, string>>> toBeVisited; //openset from wikipedia
+    
+	map<string, double> dist; //gscore from wikipedia
+	map<string, double> estimatedShortest; //fscore from wikipedia
+	map<string, string> prevPath;       
+    map<string, pair<double, double>> coords; // to store city coordinates
+
+    //get the city name and its coordinates from citiesForCords and store the coordinates in coords map
+    for (auto cityCoord : citiesForCords) {
+        string cityName = cityCoord.getCity() + ", " + cityCoord.getState();
+        coords[cityName] = {cityCoord.getLatitude(), cityCoord.getLongitude()};
+    }
+    //get the coords for start and end vertex
+    pair<double, double> startCoord = coords[startVertex];
+    pair<double, double> endCoord = coords[endVertex];
+
+    //fill them both up with infinity
+	for (auto& vertexPair : *cityGraph.getVertices()) {
+        string cityName = vertexPair.first; 
+        dist[cityName] = numeric_limits<double>::infinity();
+        estimatedShortest[cityName] = numeric_limits<double>::infinity();
+    }
+    dist[startVertex] = 0.0;
+    estimatedShortest[startVertex] = getHeuristic(startCoord.first, startCoord.second,
+        endCoord.first, endCoord.second);
+    toBeVisited.push({estimatedShortest[startVertex], startVertex}); //putting in shorest path and the id of the vertex
+
+    while (!toBeVisited.empty()){
+        pair <double, string> lowestNode = toBeVisited.top(); //lowest node is current from wikipedia
+        string current = lowestNode.second;
+        if (current == endVertex){ //if we reached the destination
+            break;
+        }
+        toBeVisited.pop();
+        
+        for (auto closestCity : cityGraph.outgoingEdgeSetOf(current)){// iterates through edges from a vertex
+			string neighbor = closestCity.to(); //gets the city name
+            double weight = closestCity.getEdgeData();
+            double potentialPath = dist[current] + weight; 
+            //if it finds a shorter path make that one its previous and update dist and estimated shortest
+            if (potentialPath < dist[neighbor]){
+				prevPath[neighbor] = current;
+                dist[neighbor] = potentialPath;
+
+                estimatedShortest[neighbor] = dist[neighbor] + getHeuristic(coords[neighbor].first,
+                     coords[neighbor].second, coords[endVertex].first, coords[endVertex].second);
+                toBeVisited.push({estimatedShortest[neighbor], neighbor});
+            }
+        }
+    } 
+    //restructure same as dijsktra
+     vector<string> path;
+    string current = endVertex;
+    while (prevPath.find(current) != prevPath.end()) {
+        path.push_back(current);
+        current = prevPath[current];
+    }
+	path.push_back(startVertex);
+    reverse(path.begin(), path.end());
+    return path;
+}
 
 
 //anything bridges related was gathered from: https://bridgesuncc.github.io/doc/cxx-api/current/html/classbridges_1_1dataset_1_1_o_s_m_data.html
@@ -148,6 +218,21 @@ int main(int argc, char **argv) {
             break;
         } else {
             cout << "Invalid input. Please enter an integer between 0 and 10." << endl;
+        }
+    }
+
+    //ask user which algorithm they want to use
+    string alg = "";
+    while(true){
+        string temp;
+        cout << "Would you like to use A* or Dijkstras shortest path algorithm? ";
+        getline(cin, temp);
+        alg = temp;
+        if(alg != "A*" and alg != "Dijkstras"){
+            cout << "Invalid input. Please enter either A* or Dijkstras." << endl;
+        }
+        else{
+            break;
         }
     }
 
@@ -346,103 +431,205 @@ int main(int argc, char **argv) {
     }
 
 	
-
-    auto startTime = std::chrono::high_resolution_clock::now();
-    vector<string> path = dijkstra(city_graph, edge_weights, startVertex, endVertex);
-    auto endTime = std::chrono::high_resolution_clock::now();
-
-
-	//temporary tester, get rid of later
-	cout << "Shortest path: ";
-	for(string city : path){
-		cout << city << " -> ";
-	}
-	cout << "END" << endl;
-    cout << endl;
-
-	// Color path nodes red
-	for (string city : path) {
-		auto* v = city_graph.getVertex(city);
-		if (v != nullptr)
-			v->getVisualizer()->setColor("red");
-	}
+    if(alg == "Dijkstras"){
+        auto startTime = std::chrono::high_resolution_clock::now();
+        vector<string> path = dijkstra(city_graph, edge_weights, startVertex, endVertex);
+        auto endTime = std::chrono::high_resolution_clock::now();
 
 
-
-	// Ok so now we want the user to know both the Straight-line distance 
-	// and our shortest path distance using dijkstra algorithm and A*
-
-	// Calculate  shortest path distance using dijkstra algorithm
-
-	double shortestPathDistance = 0.0;
-	for(int i = 0; i < path.size() - 1; i++) {
-        string city1 = path[i];
-        string city2 = path[i+1];
-        shortestPathDistance += edge_weights[city1 + ", " + city2];
-    }
-	cout << "Shortest-path distance using dijkstra algorithm: " 
-    << shortestPathDistance << " km" << endl;
-
-    // Find indices of start and end city in us_cities
-    int startIndex = -1, endIndex = -1;
-    for(int i = 0; i < us_cities.size(); i++){
-        string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
-        if(cityName == startVertex) startIndex = i;
-        if(cityName == endVertex) endIndex = i;
-    }
-
-    // Straight-line distance from getdistance function
-    if(startIndex != -1 && endIndex != -1){
-        double straightLine = getDistance(
-            us_cities[startIndex].getLatitude(),
-            us_cities[startIndex].getLongitude(),
-            us_cities[endIndex].getLatitude(),
-            us_cities[endIndex].getLongitude()
-        );
-        cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+        //temporary tester, get rid of later
+        cout << "Shortest path: ";
+        for(string city : path){
+            cout << city << " -> ";
+        }
+        cout << "END" << endl;
         cout << endl;
-    }
 
-    // This is where we use the "clock"
-
-	// We compare the 2 algorithms in terms of runtime and memory usage 
-
-    // Both metrics have C++ header file provided already.
-
-    // Runtime first.
-
-	
-
-	
-
-	
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-	std::cout << "Dijkstra runtime: " << duration << " ms" << std::endl;
-
-	// Memory usage (Linux/macOS)
-
-	struct rusage usage;
-	getrusage(RUSAGE_SELF, &usage);
-	std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
-    cout<<endl;
+        // Color path nodes red
+        for (string city : path) {
+            auto* v = city_graph.getVertex(city);
+            if (v != nullptr)
+                v->getVisualizer()->setColor("red");
+        }
 
 
-    // Re-add and highlight shortest path edges so they appear on top
-	for (int i = 0; i < path.size() - 1; i++) {
-        string city1 = path[i];
-        string city2 = path[i + 1];
-        double dist = edge_weights[city1 + ", " + city2];
 
-        // re-add edge so it's drawn last (on top)
-        city_graph.addEdge(city1, city2, dist);
-        city_graph.addEdge(city2, city1, dist);
+        // Ok so now we want the user to know both the Straight-line distance 
+        // and our shortest path distance using dijkstra algorithm and A*
 
-        auto* redEdge = city_graph.getLinkVisualizer(city1, city2);
-        if (redEdge != nullptr) {
-            redEdge->setColor("red");
-            redEdge->setThickness(5);  // thicker than default blue edges
+        // Calculate  shortest path distance using dijkstra algorithm
+
+        double shortestPathDistance = 0.0;
+        for(int i = 0; i < path.size() - 1; i++) {
+            string city1 = path[i];
+            string city2 = path[i+1];
+            shortestPathDistance += edge_weights[city1 + ", " + city2];
+        }
+        cout << "Shortest-path distance using dijkstra algorithm: " 
+        << shortestPathDistance << " km" << endl;
+
+        // Find indices of start and end city in us_cities
+        int startIndex = -1, endIndex = -1;
+        for(int i = 0; i < us_cities.size(); i++){
+            string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
+            if(cityName == startVertex) startIndex = i;
+            if(cityName == endVertex) endIndex = i;
+        }
+
+        // Straight-line distance from getdistance function
+        if(startIndex != -1 && endIndex != -1){
+            double straightLine = getDistance(
+                us_cities[startIndex].getLatitude(),
+                us_cities[startIndex].getLongitude(),
+                us_cities[endIndex].getLatitude(),
+                us_cities[endIndex].getLongitude()
+            );
+            cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+            cout << endl;
+        }
+
+        // This is where we use the "clock"
+
+        // We compare the 2 algorithms in terms of runtime and memory usage 
+
+        // Both metrics have C++ header file provided already.
+
+        // Runtime first.
+
+        
+
+        
+
+        
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+        std::cout << "Dijkstra runtime: " << duration << " ms" << std::endl;
+
+        // Memory usage (Linux/macOS)
+
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
+        cout<<endl;
+
+
+        // Re-add and highlight shortest path edges so they appear on top
+        for (int i = 0; i < path.size() - 1; i++) {
+            string city1 = path[i];
+            string city2 = path[i + 1];
+            double dist = edge_weights[city1 + ", " + city2];
+
+            // re-add edge so it's drawn last (on top)
+            city_graph.addEdge(city1, city2, dist);
+            city_graph.addEdge(city2, city1, dist);
+
+            auto* redEdge = city_graph.getLinkVisualizer(city1, city2);
+            if (redEdge != nullptr) {
+                redEdge->setColor("red");
+                redEdge->setThickness(5);  // thicker than default blue edges
+            }
         }
     }
+    else if(alg == "A*"){
+        auto startTime = std::chrono::high_resolution_clock::now();
+        vector<string> path = aStar(city_graph, edge_weights, startVertex, endVertex, us_cities);
+
+        auto endTime = std::chrono::high_resolution_clock::now();
+        cout << "Shortest path: ";
+        for(string city : path){
+            cout << city << " -> ";
+        }
+        cout << "END" << endl;
+        cout << endl;
+
+        // Color path nodes purple
+        for (string city : path) {
+            auto* v = city_graph.getVertex(city);
+            if (v != nullptr)
+                v->getVisualizer()->setColor("purple");
+        }
+
+
+
+        // Ok so now we want the user to know both the Straight-line distance 
+        // and our shortest path distance using dijkstra algorithm and A*
+
+        // Calculate shortest path distance using A* algorithm
+
+        double shortest_path_distance = 0.0;
+        for(int i = 0; i < path.size() - 1; i++) {
+            string city1 = path[i];
+            string city2 = path[i+1];
+            shortest_path_distance += edge_weights[city1 + ", " + city2];
+        }
+        cout << "Shortest-path distance using A* algorithm: " << shortest_path_distance << " km" << endl;
+
+        // Find indices of start and end city in us_cities
+        int startIndex = -1;
+        int endIndex = -1;
+        for(int i = 0; i < us_cities.size(); i++){
+            string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
+            if(cityName == startVertex){
+                startIndex = i;
+            }
+
+            if(cityName == endVertex){
+                endIndex = i;
+            }
+        }
+
+        // Straight-line distance from getdistance function
+        if(startIndex != -1 && endIndex != -1){
+            double straightLine = getDistance(us_cities[startIndex].getLatitude(), us_cities[startIndex].getLongitude(), us_cities[endIndex].getLatitude(),us_cities[endIndex].getLongitude());
+            cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+            cout << endl;
+        }
+
+        // This is where we use the "clock"
+
+        // We compare the 2 algorithms in terms of runtime and memory usage 
+
+        // Both metrics have C++ header file provided already.
+
+        // Runtime first.
+
+        
+
+        
+
+        
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+        std::cout << "A* runtime: " << duration << " ms" << std::endl;
+
+        // Memory usage (Linux/macOS)
+
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
+        cout<<endl;
+
+        // end the dijkstra algorithm
+
+        
+
+
+        // Re-add and highlight shortest path edges so they appear on top
+        for (int i = 0; i < path.size() - 1; i++) {
+            string city1 = path[i];
+            string city2 = path[i + 1];
+            double dist = edge_weights[city1 + ", " + city2];
+
+            // re-add edge so it's drawn last (on top)
+            city_graph.addEdge(city1, city2, dist);
+            city_graph.addEdge(city2, city1, dist);
+
+            auto* purpleEdge = city_graph.getLinkVisualizer(city1, city2);
+            if (purpleEdge != nullptr) {
+                purpleEdge->setColor("purple");
+                purpleEdge->setThickness(5);  // thicker than default blue edges
+            }
+        }
+    }
+
 
 
 
