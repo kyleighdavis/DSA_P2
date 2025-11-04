@@ -22,15 +22,15 @@ using namespace bridges;
 // we basically use a min-heap priority queue for efficiency.
 
 vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
-                        map<string, double>& edge_weights,
+                        unordered_map<string, double>& edge_weights,
                         string startVertex,
                         string endVertex) {
 
     // Store shortest known distance to each city
-    map<string,double> dist;
+    unordered_map<string,double> dist;
     
     // Store previous city in the shortest path (for reconstruction later on)
-    map<string,string> prev;
+    unordered_map<string,string> prev;
 
     // get vertex names from Bridges
 
@@ -53,8 +53,8 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 
     // Reference for map iteration: https://cplusplus.com/reference/map/map/begin/
 
-    map<string, vector<pair<string, double>>> adj;
-    for (map<string, double>::iterator edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt) {
+    unordered_map<string, vector<pair<string, double>>> adj;
+    for (unordered_map<string, double>::iterator edgeIt = edge_weights.begin(); edgeIt != edge_weights.end(); ++edgeIt) {
         string key = edgeIt->first;
         double weight = edgeIt->second;
 

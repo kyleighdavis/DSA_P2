@@ -13,10 +13,10 @@
 #include <chrono>           // for timing/ our clock maybe...
 
 // The following 2 libraries should be working for Linux
-
+#include <queue>
 #include <sys/resource.h>   
 #include <sys/time.h>      
-
+#include <unordered_map>
 #include "Bridges.h"
 #include "DataSource.h"
 #include "data_src/City.h"
@@ -48,15 +48,15 @@ double getHeuristic(double lat1, double lon1, double lat2, double lon2){
 }
 
 vector<string> aStar(GraphAdjList<string, double>& cityGraph,
-	 map<string, double>& edgeWeights, 
+	 unordered_map<string, double>& edgeWeights, 
 	 string startVertex, string endVertex, vector<City>& citiesForCords) {
     priority_queue<pair<double, string>, vector<pair<double, string>>,
     greater<pair<double, string>>> toBeVisited; //openset from wikipedia
     
-	map<string, double> dist; //gscore from wikipedia
-	map<string, double> estimatedShortest; //fscore from wikipedia
-	map<string, string> prevPath;       
-    map<string, pair<double, double>> coords; // to store city coordinates
+	unordered_map<string, double> dist; //gscore from wikipedia
+	unordered_map<string, double> estimatedShortest; //fscore from wikipedia
+	unordered_map<string, string> prevPath;       
+    unordered_map<string, pair<double, double>> coords; // to store city coordinates
 
     //get the city name and its coordinates from citiesForCords and store the coordinates in coords map
     for (auto cityCoord : citiesForCords) {
@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    //ask user which algorithm they want to use
+    //ask user which algorithm they want to use 
     string alg = "";
     while(true){
         string temp;
@@ -285,7 +285,7 @@ int main(int argc, char **argv) {
 
     // format example to access edge_weights["Raleigh, NC, Charlotte, NC"];
 
-    map<string, double> edge_weights;
+    unordered_map<string, double> edge_weights;
     string startVertex;
     string endVertex;
     cout << endl;
@@ -351,7 +351,7 @@ int main(int argc, char **argv) {
     }
 
 
-    for(int i = 0; i < us_cities.size(); i++) {
+    for(int i = 0; i < us_cities.size(); i++) { //O(n) n =us cities 
         string city1 = us_cities[i].getCity() + ", " + us_cities[i].getState();
         auto *vertex1 = city_graph.getVertex(city1);
 
@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
 
         // adjusting the distance for 2d
 
-        for(int j = 0; j < us_cities.size(); j++) {
+        for(int j = 0; j < us_cities.size(); j++) { //O(n)
             if(i == j) {
                 continue;
             }
@@ -376,27 +376,27 @@ int main(int argc, char **argv) {
             double y_distance = vertex1->getLocationY() - vertex2->getLocationY();
             double c_distance = sqrt(x_distance * x_distance + y_distance * y_distance);
 
-            distance_list.push_back({c_distance, city2});
+            distance_list.push_back({c_distance, city2}); //this stores n-1 
         }
 
-        sort(distance_list.begin(), distance_list.end());
+        sort(distance_list.begin(), distance_list.end()); //O(nlogn) reference c++ LIBRARY
 
         int count = 0;
         for(int k = 0; k < distance_list.size(); k++) {
-            if(count >= neighbors) {
+            if(count >= neighbors) { //O(1)
                 break;
             }
 
             string city2 = distance_list[k].second;
-            if(edge_weights.find(city1 + ", " + city2) != edge_weights.end()) {
+            if(edge_weights.find(city1 + ", " + city2) != edge_weights.end()) { //O(logm)
                 continue;
             }
 
-            // get the index in the og list (us_cities)
+            // get the index in the og list (us_cities) 
             int city2_index;
-            for(int n = 0; n < us_cities.size(); n++) {
+            for(int n = 0; n < us_cities.size(); n++) { //O(n)
                 string nameCheck = us_cities[n].getCity() + ", " + us_cities[n].getState();
-                if(nameCheck == city2) {
+                if(nameCheck == city2) { //O(1) or o(t) where t is the length of the string t
                     city2_index = n;
                     break;
                 }
@@ -408,11 +408,12 @@ int main(int argc, char **argv) {
             city_graph.addEdge(city1, city2, dist);
             city_graph.addEdge(city2, city1, dist);
 
-            edge_weights[city1 + ", " + city2] = dist;
+            edge_weights[city1 + ", " + city2] = dist; //O(logn)
             edge_weights[city2 + ", " + city1] = dist;
 
             count++; // limits number of neighbors
         }
+        //O(n) * (O(n) + O(nlogn) + O(1) + O(n) + O(logn)) = O(n^2logn)
     }
 
     if(city_graph.getVertex(startVertex) == nullptr && city_graph.getVertex(endVertex) == nullptr) {

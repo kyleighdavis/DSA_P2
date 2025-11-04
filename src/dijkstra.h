@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include "Bridges.h"
 #include "GraphAdjList.h"
 
@@ -16,7 +17,7 @@ using namespace bridges;
 // startVertex, endVertex: the start and destination city names
 
 vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
-                        map<string, double>& edge_weights,
+                        unordered_map<string, double>& edge_weights,
                         string startVertex,
                         string endVertex);
 
