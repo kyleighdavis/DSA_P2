@@ -59,16 +59,16 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
     unordered_map<string, pair<double, double>> coords; // to store city coordinates
 
     //get the city name and its coordinates from citiesForCords and store the coordinates in coords map
-    for (auto cityCoord : citiesForCords) {
+    for (auto cityCoord : citiesForCords) { // O(V) v is cities  
         string cityName = cityCoord.getCity() + ", " + cityCoord.getState();
-        coords[cityName] = {cityCoord.getLatitude(), cityCoord.getLongitude()};
-    }
+        coords[cityName] = {cityCoord.getLatitude(), cityCoord.getLongitude()}; //putting stuff inside of 
+    }//unordered map should be O(1)
     //get the coords for start and end vertex
     pair<double, double> startCoord = coords[startVertex];
     pair<double, double> endCoord = coords[endVertex];
 
     //fill them both up with infinity
-	for (auto& vertexPair : *cityGraph.getVertices()) {
+	for (auto& vertexPair : *cityGraph.getVertices()) { // O(V) v is cities
         string cityName = vertexPair.first; 
         dist[cityName] = numeric_limits<double>::infinity();
         estimatedShortest[cityName] = numeric_limits<double>::infinity();
