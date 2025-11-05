@@ -75,18 +75,18 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
     }
     dist[startVertex] = 0.0;
     estimatedShortest[startVertex] = getHeuristic(startCoord.first, startCoord.second,
-        endCoord.first, endCoord.second);
+        endCoord.first, endCoord.second); //should be o(1) bc get heuristic is o(1)
     toBeVisited.push({estimatedShortest[startVertex], startVertex}); //putting in shorest path and the id of the vertex
-
-    while (!toBeVisited.empty()){
+        //pushing into priority queue is O(log(v))
+    while (!toBeVisited.empty()){ // O(V) v is cities
         pair <double, string> lowestNode = toBeVisited.top(); //lowest node is current from wikipedia
         string current = lowestNode.second;
         if (current == endVertex){ //if we reached the destination
             break;
         }
-        toBeVisited.pop();
+        toBeVisited.pop(); //popping is also O(log(v))
         
-        for (auto closestCity : cityGraph.outgoingEdgeSetOf(current)){// iterates through edges from a vertex
+        for (auto closestCity : cityGraph.outgoingEdgeSetOf(current)){// iterates through edges from a vertex O(e) where is the edges per city
 			string neighbor = closestCity.to(); //gets the city name
             double weight = closestCity.getEdgeData();
             double potentialPath = dist[current] + weight; 
@@ -97,8 +97,8 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
 
                 estimatedShortest[neighbor] = dist[neighbor] + getHeuristic(coords[neighbor].first,
                      coords[neighbor].second, coords[endVertex].first, coords[endVertex].second);
-                toBeVisited.push({estimatedShortest[neighbor], neighbor});
-            }
+                toBeVisited.push({estimatedShortest[neighbor], neighbor}); //pushes in shortest path and the id of vertex
+            }//time complexity is O(log(v)) for the push
         }
     } 
     //restructure same as dijsktra
@@ -108,11 +108,11 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
         path.push_back(current);
         current = prevPath[current];
     }
-	path.push_back(startVertex);
-    reverse(path.begin(), path.end());
+	path.push_back(startVertex); 
+    reverse(path.begin(), path.end());//O(p) where p is the size of the path it should be negligible bc of the small size compared to all of the vertices
     return path;
 }
-
+//o(v) + O(v) + O(v) + O(v) + O(v) +
 
 //anything bridges related was gathered from: https://bridgesuncc.github.io/doc/cxx-api/current/html/classbridges_1_1dataset_1_1_o_s_m_data.html
 //                                            https://bridgesuncc.github.io/tutorials/Data_OSM.html
