@@ -79,7 +79,9 @@ Before running this project, make sure you have:
    - Remember you are editing the program in Ubuntu linux system, not your local Windows path.
 5. Below is a example screenshot of what the project should look like: ![Project Visualization Screenshot](./images/test.png)
 
-6. Now compile it by using g++ command:
+6. Now compile it by using g++ command (assume you have similar file path):
+
+g++ -g ./src/main.cpp ./src/dijkstra.cpp -std=c++14     -Ibridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/include     -Lbridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/lib     -lbridges -lcurl -o a.out
 
 ## 💡Input prompts:
 - State abbreviation (case-insensitive, e.g., fl, Fl, FL)
