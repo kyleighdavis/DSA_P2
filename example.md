@@ -2,13 +2,14 @@
 
 ### 🧮 Sample Input:
 
-State: FL
-Min population: 50000
-Max population: 1000000
-Number of cities: 5
-Neighbors per city: 3
-Start city: Miami
-End city: Tampa
+- State: FL  
+- Min population: 0
+- Max population: 5000000
+- Number of cities: 250 
+- Neighbors per city: 6
+- Algorithm used: A*
+- Start city: Miami  
+- End city: Tampa
 
 
 ---
