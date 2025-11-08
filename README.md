@@ -89,7 +89,7 @@ g++ -g ./src/main.cpp ./src/dijkstra.cpp -std=c++14     -Ibridges-cxx-LATEST-x86
 - Number of cities (1–500)
 - Maximum neighboring cities per city (0–10)
 - Start and end city for shortest path calculation
-  - User can type the city name (case-insensitive)
+  - User can type the city name (case-sensitive, must match exactly the same with space!)
   - Must exist in the selected state
  
 ## 🧩 Example
