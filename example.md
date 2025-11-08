@@ -66,7 +66,8 @@ El Portal, FL ->
 [http://assignments.bridgesuncc.org/assignments/1/AriyaM]
 
 The output graph will be visualized in BRIDGES, with:
-- **Red nodes** → cities on the shortest path  
+- **Red nodes** → cities on the shortest path using Dijkstra Algorithm
+- **Purple nodes** → cities on the shortest path using A* Algorithm
 - **Blue nodes** → all other cities  
 - **Edges** → represent distances between neighboring cities
 
