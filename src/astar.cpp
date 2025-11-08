@@ -477,7 +477,7 @@ int main(int argc, char **argv) {
     // Straight-line distance from getdistance function
     if(startIndex != -1 && endIndex != -1){
         double straightLine = getDistance(us_cities[startIndex].getLatitude(), us_cities[startIndex].getLongitude(), us_cities[endIndex].getLatitude(),us_cities[endIndex].getLongitude());
-        cout << "Straight-line distance yippee: " << straightLine << " km" << endl;
+        cout << "Straight-line distance : " << straightLine << " km" << endl;
         cout << endl;
     }
 
