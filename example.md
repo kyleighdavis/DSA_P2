@@ -11,14 +11,6 @@
 - Start/First city: Parker  
 - End/Second city: Miami
 
-
----
-
-### 📊 Sample Output:
-
-
-
-
 ---
 # 🚗 A* Shortest Path Results — Parker, FL → Miami, FL
 
@@ -68,13 +60,11 @@ El Portal, FL ->
 
 ---
 
-✅ *Computation completed successfully using the A\* pathfinding algorithm.*
-
-
-
-
 
 ### 🖼️ Visualization Example:
+
+[http://assignments.bridgesuncc.org/assignments/1/AriyaM]
+
 The output graph will be visualized in BRIDGES, with:
 - **Red nodes** → cities on the shortest path  
 - **Blue nodes** → all other cities  
