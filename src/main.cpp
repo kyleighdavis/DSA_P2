@@ -48,8 +48,8 @@ double getHeuristic(double lat1, double lon1, double lat2, double lon2){
 }
 
 vector<string> aStar(GraphAdjList<string, double>& cityGraph,
-	 unordered_map<string, double>& edgeWeights, 
-	 string startVertex, string endVertex, vector<City>& citiesForCords) {
+	unordered_map<string, double>& edgeWeights, 
+	string startVertex, string endVertex, vector<City>& citiesForCords) {
     priority_queue<pair<double, string>, vector<pair<double, string>>,
     greater<pair<double, string>>> toBeVisited; //openset from wikipedia
     
@@ -102,7 +102,7 @@ vector<string> aStar(GraphAdjList<string, double>& cityGraph,
         }
     } 
     //restructure same as dijsktra
-     vector<string> path;
+    vector<string> path;
     string current = endVertex;
     while (prevPath.find(current) != prevPath.end()) {
         path.push_back(current);
@@ -154,7 +154,8 @@ int main(int argc, char **argv) {
 
         if (validStates.find(state) != validStates.end()) {
             break;  // valid state, exit loop
-        } else {
+        } 
+        else {
             cout << "Invalid state abbreviation. Please try again.\n";
         }
     }
@@ -171,7 +172,8 @@ int main(int argc, char **argv) {
         
         try {
         min_pop = stoi(temp);
-        } catch (...) {
+        } 
+        catch (...) {
         cout << "Invalid input. Please enter an integer only.\n";
         continue;
         }
@@ -213,7 +215,8 @@ int main(int argc, char **argv) {
         
         try {
         city_limit = stoi(temp);
-        } catch (...) {
+        } 
+        catch (...) {
         cout << "Invalid input. Please enter an integer only.\n";
         continue;
         }
@@ -237,8 +240,6 @@ int main(int argc, char **argv) {
         cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";
         getline(cin, temp);
 
-        
-
         try {
         neighbors = stoi(temp);
         } 
@@ -250,7 +251,8 @@ int main(int argc, char **argv) {
 
         if (neighbors >= 0 && neighbors <= 10) {
             break;
-        } else {
+        } 
+        else {
             cout << "Invalid input. Please enter an integer between 0 and 10.\n" << endl;
         }
     }
@@ -484,8 +486,9 @@ int main(int argc, char **argv) {
         // Color path nodes red
         for (string city : path) {
             auto* v = city_graph.getVertex(city);
-            if (v != nullptr)
+            if (v != nullptr){
                 v->getVisualizer()->setColor("red");
+            }
         }
 
 
@@ -508,8 +511,12 @@ int main(int argc, char **argv) {
         int startIndex = -1, endIndex = -1;
         for(int i = 0; i < us_cities.size(); i++){
             string cityName = us_cities[i].getCity() + ", " + us_cities[i].getState();
-            if(cityName == startVertex) startIndex = i;
-            if(cityName == endVertex) endIndex = i;
+            if(cityName == startVertex){
+                startIndex = i;
+            }
+            if(cityName == endVertex){
+                endIndex = i;
+            }
         }
 
         // Straight-line distance from getdistance function

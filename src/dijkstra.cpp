@@ -57,8 +57,8 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 
         // we need to extract the two city names from the string key
 
-        size_t comma_pos1 = key.find(",");
-        size_t comma_pos2 = key.find(",", comma_pos1 + 2); // skip ", "
+        auto comma_pos1 = key.find(",");
+        auto comma_pos2 = key.find(",", comma_pos1 + 2); // skip ", "
         string city1 = key.substr(0, comma_pos2);
         string city2 = key.substr(comma_pos2 + 2);
 
@@ -104,7 +104,7 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 
         //  We traverse through all neighbors of the current city
 
-        for (size_t i = 0; i < adj[u].size(); i++) {
+        for (int i = 0; i < adj[u].size(); i++) {
             string neighbor = adj[u][i].first;
             double weight = adj[u][i].second;
 
