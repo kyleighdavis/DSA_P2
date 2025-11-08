@@ -16,7 +16,7 @@
 #include <queue>
 #include <sys/resource.h>   
 #include <sys/time.h>      
-#include <unordered_map>
+
 #include "Bridges.h"
 #include "DataSource.h"
 #include "data_src/City.h"
@@ -168,7 +168,14 @@ int main(int argc, char **argv) {
         string temp;
         cout << "Enter minimum population (0 - 10000000): ";
         getline(cin, temp);
+        
+        try {
         min_pop = stoi(temp);
+        } catch (...) {
+        cout << "Invalid input. Please enter an integer only.\n";
+        continue;
+        }
+
         if (min_pop < 0 || min_pop > 10000000) {
             cout << "Invalid input. Please enter a number between 0 and 10 million.\n";
             
@@ -181,7 +188,16 @@ int main(int argc, char **argv) {
         string temp;
         cout << "Enter maximum population (" << min_pop << " - 10000000): ";
         getline(cin, temp);
+        
+        try{
         max_pop = stoi(temp);
+        }
+        catch (...) 
+        {
+        cout << "Invalid input. Please enter an integer only.\n";
+        continue;
+        }
+
         if (max_pop < min_pop || max_pop > 10000000) {
             cout << "Invalid input. Please enter a number between " << min_pop << " and 10,000,000.\n";
             
@@ -194,7 +210,14 @@ int main(int argc, char **argv) {
         string temp;
         cout << "How many cities do you want to retrieve (1 - 1000)? ";
         getline(cin, temp);
+        
+        try {
         city_limit = stoi(temp);
+        } catch (...) {
+        cout << "Invalid input. Please enter an integer only.\n";
+        continue;
+        }
+        
         if (city_limit < 1 || city_limit > 1000) {
             cout << "Invalid input. Please enter a number between 1 and 1000.\n";
             
@@ -213,11 +236,22 @@ int main(int argc, char **argv) {
         string temp;
         cout << "Enter the maximum number of neighboring cities you want to connect for each city (0-10): ";
         getline(cin, temp);
+
+        
+
+        try {
         neighbors = stoi(temp);
+        } 
+        catch (...) 
+        {
+        cout << "Invalid input. Please enter an integer only.\n" << endl;
+        continue; // restart loop
+        }
+
         if (neighbors >= 0 && neighbors <= 10) {
             break;
         } else {
-            cout << "Invalid input. Please enter an integer between 0 and 10." << endl;
+            cout << "Invalid input. Please enter an integer between 0 and 10.\n" << endl;
         }
     }
 
@@ -225,11 +259,12 @@ int main(int argc, char **argv) {
     string alg = "";
     while(true){
         string temp;
-        cout << "Would you like to use A* or Dijkstras shortest path algorithm? ";
+        cout << "Would you like to use A* or Dijkstras shortest path algorithm?\n";
+        cout << "Enter A* or Dijkstras only please.";
         getline(cin, temp);
         alg = temp;
         if(alg != "A*" and alg != "Dijkstras"){
-            cout << "Invalid input. Please enter either A* or Dijkstras." << endl;
+            cout << "Invalid input. Please enter either A* or Dijkstras.\n" << endl;
         }
         else{
             break;

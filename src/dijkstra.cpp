@@ -1,13 +1,11 @@
 #include "dijkstra.h"
 #include <iostream>
-#include <queue>
 #include <vector>
 #include <map>
 #include <unordered_map>
 #include <limits>
 #include <string>
-
-
+#include <algorithm>
 
 using namespace std;
 using namespace bridges;
@@ -19,7 +17,7 @@ using namespace bridges;
 // - C++ Priority Queue Reference: https://en.cppreference.com/w/cpp/container/priority_queue
 
 
-// we basically use a min-heap priority queue for efficiency.
+// we basically use an unordered_map version instead of a min-heap priority queue.
 
 vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
                         unordered_map<string, double>& edge_weights,
@@ -36,7 +34,6 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
 
     // 1. Then we initialize distances and previous pointers
 
-    
     unordered_map<string, Element<double>*>* vertexMap = city_graph.getVertices();
     unordered_map<string, Element<double>*>::iterator it;
 
@@ -72,27 +69,34 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
         adj[city2].push_back({city1, weight});
     }
 
-    // 3. Set up a priority queue (min-heap) for Dijkstra
+    // 3. Instead of a priority queue (min-heap), 
+    // we’ll use an unordered_map to track unvisited cities and manually find the smallest distance each time.
 
-    priority_queue<pair<double, string>, vector<pair<double, string>>, greater<pair<double, string>>> pq;
-    pq.push({0.0, startVertex});
+    unordered_map<string, bool> visited;
+    for (auto& v : *vertexMap) {
+        visited[v.first] = false;
+    }
 
     // 4. Our Dijkstra’s main loop
     // Remember the classic version: 
     // We just repeatedly extract the nearest unvisited city and relax its edges.
     
-    while (!pq.empty()) {
-        pair<double, string> current = pq.top(); // Get city with smallest distance first.
-        pq.pop();
-        double current_dist = current.first;
-        string u = current.second;
+    while (true) {
+        // find unvisited city with smallest distance (O(V) scan)
+        string u = "";
+        double min_dist = numeric_limits<double>::infinity();
 
-        //We stop early if the algorithm reaches the destination city
+        for (auto& entry : dist) {
+            if (!visited[entry.first] && entry.second < min_dist) {
+                min_dist = entry.second;
+                u = entry.first;
+            }
+        }
 
-        if (u == endVertex) break;
+        // If we can’t find any unvisited node (or reached end), we stop
+        if (u == "" || u == endVertex) break;
 
-        // Here we will skip the entry if a shorter path to this city was already found
-        if (current_dist > dist[u]) continue;
+        visited[u] = true;
 
         // Reference from geekforseeks again: https://www.geeksforgeeks.org/dsa/dijkstras-shortest-path-algorithm-greedy-algo-7/ 
        
@@ -104,11 +108,12 @@ vector<string> dijkstra(GraphAdjList<string, double, double>& city_graph,
             string neighbor = adj[u][i].first;
             double weight = adj[u][i].second;
 
+            if (visited[neighbor]) continue;
+
             double alt = dist[u] + weight;
             if (alt < dist[neighbor]) {
                 dist[neighbor] = alt;
                 prev[neighbor] = u;    // Don't forget to record the path.
-                pq.push({alt, neighbor});  // And push the distance (update) to queue.
             }
         }
     }
