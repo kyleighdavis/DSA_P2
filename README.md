@@ -3,16 +3,16 @@
 This is Project 2 for Data Structures and Algorithms at UF.
 
 
-## 🧰 Project Description
+##  Project Description
 
-### 📄 Description of Data
+###  Description of Data
 - The project uses **U.S. city data** (latitude, longitude, and population) provided by the **BRIDGES Data API**.
 - Each city is represented as a **node** in a graph.
 - Connections (edges) between cities represent possible routes, weighted by **geographical distance**.
 
 ---
 
-### 🧠 Tools / Languages / APIs / Libraries Used
+###  Tools / Languages / APIs / Libraries Used
 - **Language:** C++ (C++14 standard)
 - **Development Environment:** Visual Studio Code (with WSL/Ubuntu)
 - **Compiler:** `g++`
@@ -24,14 +24,14 @@ This is Project 2 for Data Structures and Algorithms at UF.
 
 ---
 
-### ⚙️ Algorithms Implemented
+###  Algorithms Implemented
 - **Dijkstra’s Algorithm** — finds the shortest path between cities in a weighted graph.
 - **A\* (A-Star) Algorithm** — optimized version of Dijkstra using heuristics (geographical distance).
 - Both algorithms are implemented and compared for **runtime efficiency** and **memory usage**.
 
 ---
 
-### 🧩 Additional Data Structures / Algorithms Used
+###  Additional Data Structures / Algorithms Used
 - **Adjacency List:** stores city-to-city connections and their distances efficiently.
 - **Priority Queue (Min-Heap):** selects the city with the smallest tentative distance in `O(log V)` time.
 - **Map / Unordered Map:** tracks distances (`dist`) and predecessors (`prev`) for path reconstruction.
@@ -42,7 +42,7 @@ This is Project 2 for Data Structures and Algorithms at UF.
 
 
 
-## 🚀Features
+## Features
 - User selects a state, population range, number of cities, and neighbors per city.
 - Graph visualization using [Bridges C++ API](http://bridgesuncc.github.io/).
 - Calculates:
@@ -52,7 +52,7 @@ This is Project 2 for Data Structures and Algorithms at UF.
 - Displays runtime and memory usage of both algorithms.
 
 
-## 🧰 Prerequisites/Requirements
+##  Prerequisites/Requirements
 
 Before running this project, make sure you have:
 
@@ -65,7 +65,7 @@ Before running this project, make sure you have:
   - Follow the tutorial [here](https://bridgesuncc.github.io/), dowload [Linux] [TGZ] under C++ client
 
   
-## ⚙️Step-By-Step Usage
+## Step-By-Step Usage
 
 1. In order to compile the project, you would need to setup and run BRIDGES Programs.
 2. Follow the bridges setup tutorials: [BRIDGES:Getting Started](https://bridgesuncc.github.io/bridges_setup.html)
@@ -83,7 +83,7 @@ Before running this project, make sure you have:
 
 g++ -g ./src/main.cpp ./src/dijkstra.cpp -std=c++14     -Ibridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/include     -Lbridges-cxx-LATEST-x86_64-linux-gnu/bridges-cxx-3.5.0-x86_64-linux-gnu/lib     -lbridges -lcurl -o a.out
 
-## 💡Input prompts:
+## Input prompts:
 - State abbreviation (case-insensitive, e.g., fl, Fl, FL)
 - Minimum and maximum population
 - Number of cities (1–500)
@@ -92,15 +92,15 @@ g++ -g ./src/main.cpp ./src/dijkstra.cpp -std=c++14     -Ibridges-cxx-LATEST-x86
   - User can type the city name (case-sensitive, must match exactly the same with space!)
   - Must exist in the selected state
  
-## 🧩 Example
+##  Example
 
 For a sample input/output demonstration, see:  
-👉 [Example Input/Output](example.md)
+ [Example Input/Output](example.md)
 
-## 🔍 Algorithm Documentation
+##  Algorithm Documentation
 
 For a detailed explanation of how the **Dijkstra’s Algorithm** works in this project, including its logic, data structures, and code breakdown, see:
 
-👉 [Dijkstra Algorithm Explanation](dijkstra_walkthrough.md)
+ [Dijkstra Algorithm Explanation](dijkstra_walkthrough.md)
 
 
